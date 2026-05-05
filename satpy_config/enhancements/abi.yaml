@@ -1,0 +1,193 @@
+enhancements:
+  # --- PRODUCTOS DE TEMPERATURA (LST) ---
+  lst_kelvin_color01:
+    standard_name: lst_kelvin_color01
+    operations:
+      - name: colorize
+        method: !!python/name:satpy.enhancements.colormap.colorize
+        kwargs:
+          palettes:
+            - colors:
+                - [148, 0, 211]   # Violeta (Frío)
+                - [65, 105, 225]  # Royal Blue
+                - [0, 255, 255]    # Cyan
+                - [34, 139, 34]   # Forest Green
+                - [255, 255, 0]   # Amarillo
+                - [255, 140, 0]   # Dark Orange
+                - [255, 0, 0]     # Red
+                - [128, 0, 0]     # Maroon (Cálido)
+              color_scale: 255
+              min_value: 213.15    # -60°C
+              max_value: 333.15    # +60°C
+
+  lst_celsius_color01:
+    standard_name: lst_celsius_color01
+    operations:
+      - name: colorize
+        method: !!python/name:satpy.enhancements.colormap.colorize
+        kwargs:
+          palettes:
+            - colors:
+                - [148, 0, 211]
+                - [65, 105, 225]
+                - [0, 255, 255]
+                - [34, 139, 34]
+                - [255, 255, 0]
+                - [255, 140, 0]
+                - [255, 0, 0]
+                - [128, 0, 0]
+              color_scale: 255
+              min_value: -60.0
+              max_value: 60.0
+
+  # --- PRODUCTO DE FUEGO (FDCF) ---
+  my_fdc_fn01:
+    standard_name: my_fdc_fn01
+    operations:
+      - name: colorize
+        method: !!python/name:satpy.enhancements.colormap.colorize
+        kwargs:
+          palettes:
+            - colors:
+                - [18, 18, 18, 255]      # -99: Initialization value
+                - [10, 18, 30, 255]      # 0: Non-processed region (Very dark blue)
+                - [255, 0, 0, 255]       # 10: Processed fire pixel (Red)
+                - [255, 255, 0, 255]     # 11: Saturated fire pixel (Yellow)
+                - [255, 140, 0, 255]     # 12: Cloud contaminated fire (DarkOrange)
+                - [255, 69, 0, 255]      # 13: High probability fire (OrangeRed)
+                - [255, 165, 0, 255]     # 14: Medium probability fire (Orange)
+                - [255, 215, 0, 255]     # 15: Low probability fire (Gold)
+                - [138, 43, 226, 255]    # 16: Reserved category 1
+                - [128, 0, 128, 255]     # 17: Reserved category 2
+                - [75, 0, 130, 255]      # 18: Reserved category 3
+                - [255, 0, 255, 255]     # 19: Reserved category 4
+                - [218, 112, 214, 255]   # 20: Reserved category 5
+                - [221, 160, 221, 255]   # 21: Reserved category 6
+                - [216, 191, 216, 255]   # 22: Reserved category 7
+                - [213, 0, 249, 255]     # 30: TF Processed fire pixel (Purple)
+                - [101, 31, 255, 255]    # 31: TF Saturated fire pixel
+                - [61, 90, 254, 255]     # 32: TF Cloud contaminated fire pixel
+                - [0, 176, 255, 255]     # 33: TF High probability fire pixel
+                - [0, 229, 255, 255]     # 34: TF Medium probability fire pixel
+                - [29, 233, 182, 255]    # 35: TF Low probability fire pixel
+                - [0, 0, 0, 255]         # 40: Space pixel (Pure Black)
+                - [255, 0, 127, 255]     # 50: Atmospheric Limb (>80°) (Fuchsia)
+                - [0, 255, 200, 255]     # 60: Solar Glint / Block-out (Electric Cyan)
+                - [20, 51, 17, 255]      # 100: Processed region - Land (Dark Green)
+                - [18, 18, 18, 255]      # 120: Bad L1b data
+                - [47, 79, 79, 255]      # 121: Extremely cloudy pixel (Invalid)
+                - [11, 11, 11, 255]      # 123: Value out of range
+                - [15, 15, 15, 255]      # 124: Sensor calibration error
+                - [5, 5, 5, 255]         # 125: Pixel not processed by algorithm
+                - [0, 0, 0, 255]         # 126: Outside scan area (Space)
+                - [0, 0, 0, 255]         # 127: Fill Value
+                - [0, 51, 102, 255]      # 151: Sea water (Deep Blue)
+                - [0, 91, 150, 255]      # 152: Coastline fringe
+                - [0, 119, 190, 255]     # 153: Inland water
+                - [207, 216, 220, 255]   # 200: Cloud test (Gray-Blue)
+                - [236, 239, 241, 255]   # 215: Cloud test day (Light Gray)
+              values: [-99, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 30, 31, 32, 33, 34, 35, 40, 50, 60, 100, 120, 121, 123, 124, 125, 126, 127, 151, 152, 153, 200, 215]
+              interpolation: nearest
+              color_scale: 255
+          out_of_range: [0, 0, 0, 255]
+          fill_value: [0, 0, 0, 255]
+  my_fdc_fn02:
+    standard_name: my_fdc_fn02
+    operations:
+      - name: colorize
+        method: !!python/name:satpy.enhancements.colormap.colorize
+        kwargs:
+          palettes:
+            - colors:
+                - [0, 0, 3, 255]         # -99: Initialization (Magma Dark)
+                - [0, 0, 3, 255]         # 0: Clear Land (Magma Base)
+                - [2, 0, 10, 255]        # 10: High Fid. Fire
+                - [7, 0, 20, 255]        # 11: Saturated Fire
+                - [14, 2, 35, 255]       # 12: Cloud Contam. Fire
+                - [24, 6, 52, 255]       # 13: High Prob. Fire
+                - [37, 9, 70, 255]       # 14: Med. Prob. Fire
+                - [51, 10, 88, 255]      # 15: Low Prob. Fire
+                - [65, 13, 104, 255]     # 16: Reserved 1
+                - [80, 18, 118, 255]     # 17: Reserved 2
+                - [95, 24, 125, 255]     # 18: Reserved 3
+                - [111, 30, 128, 255]    # 19: Reserved 4
+                - [127, 37, 128, 255]    # 20: Reserved 5
+                - [144, 44, 126, 255]    # 21: Reserved 6
+                - [160, 51, 122, 255]    # 22: Reserved 7
+                - [176, 58, 116, 255]    # 30: Cloud (Magma Pink-ish)
+                - [190, 67, 109, 255]    # 31: TF Saturated fire
+                - [205, 77, 101, 255]    # 32: TF Cloud contaminated fire
+                - [218, 88, 91, 255]     # 33: TF High probability fire
+                - [230, 101, 81, 255]    # 34: TF Medium probability fire
+                - [240, 116, 70, 255]    # 35: TF Low probability fire
+                - [247, 134, 58, 255]    # 40: Water (Magma Orange)
+                - [251, 153, 49, 255]    # 50: Atmospheric Limb
+                - [252, 173, 47, 255]    # 60: Desert (Magma Gold)
+                - [251, 193, 56, 255]    # 100: Processed Land
+                - [247, 213, 75, 255]    # 120: Bad L1b
+                - [241, 233, 103, 255]   # 121: Extr. Cloud
+                - [241, 243, 140, 255]   # 123: Out of range
+                - [245, 250, 175, 255]   # 124: Calib Error
+                - [250, 252, 206, 255]   # 125: Not processed
+                - [252, 253, 233, 255]   # 126: Space (Magma White/Bright)
+                - [255, 255, 255, 255]   # 127: Fill Value
+                - [200, 200, 200, 255]   # 151: Sea Water
+                - [180, 180, 180, 255]   # 152: Coastline
+                - [160, 160, 160, 255]   # 153: Inland water
+                - [140, 140, 140, 255]   # 200: Cloud Test
+                - [120, 120, 120, 255]   # 215: Cloud Test Day
+              values: [-99, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 30, 31, 32, 33, 34, 35, 40, 50, 60, 100, 120, 121, 123, 124, 125, 126, 127, 151, 152, 153, 200, 215]
+              interpolation: nearest
+              color_scale: 255
+          out_of_range: [0, 0, 0, 255]
+          fill_value: [0, 0, 0, 255]
+  my_fdc_fn03:
+    standard_name: my_fdc_fn03
+    operations:
+      - name: colorize
+        method: !!python/name:satpy.enhancements.colormap.colorize
+        kwargs:
+          palettes:
+            - colors:
+                - [  0,   0,   3, 0]   # -99: Initialization (Magma Dark)
+                - [  0,   0,   3, 0]   # 0: Clear Land (Magma Base)
+                - [  2,   0,  10, 255]   # 10: High Fid. Fire***
+                - [  7,   0,  20, 255]   # 11: Saturated Fire***
+                - [ 14,   2,  35, 255]   # 12: Cloud Contam. Fire***
+                - [ 24,   6,  52, 255]   # 13: High Prob. Fire***
+                - [ 37,   9,  70, 255]   # 14: Med. Prob. Fire***
+                - [ 51,  10,  88, 255]   # 15: Low Prob. Fire ***
+                - [ 65,  13, 104, 0]   # 16: Reserved 1
+                - [ 80,  18, 118, 0]   # 17: Reserved 2
+                - [ 95,  24, 125, 0]   # 18: Reserved 3
+                - [111,  30, 128, 0]   # 19: Reserved 4
+                - [127,  37, 128, 0]   # 20: Reserved 5
+                - [144,  44, 126, 0]   # 21: Reserved 6
+                - [160,  51, 122, 0]   # 22: Reserved 7
+                - [176,  58, 116, 0]   # 30: Cloud (Magma Pink-ish)
+                - [190,  67, 109, 255]   # 31: TF Saturated fire ***
+                - [205,  77, 101, 255]   # 32: TF Cloud contaminated fire ***
+                - [218,  88,  91, 255]   # 33: TF High probability fire ***
+                - [230, 101,  81, 255]   # 34: TF Medium probability fire ***
+                - [240, 116,  70, 255]   # 35: TF Low probability fire ***
+                - [247, 134,  58, 0]   # 40: Water (Magma Orange)
+                - [251, 153,  49, 0]   # 50: Atmospheric Limb ***
+                - [252, 173,  47, 255]   # 60: Glint (reflejo sol)
+                - [251, 193,  56, 0]   # 100: Processed Land
+                - [247, 213,  75, 0]   # 120: Bad L1b
+                - [241, 233, 103, 0]   # 121: Extr. Cloud
+                - [241, 243, 140, 0]   # 123: Out of range
+                - [245, 250, 175, 0]   # 124: Calib Error
+                - [250, 252, 206, 0]   # 125: Not processed
+                - [252, 253, 233, 0]   # 126: Space (Magma White/Bright)
+                - [255, 255, 255, 0]   # 127: Fill Value
+                - [200, 200, 200, 0]   # 151: Sea Water
+                - [180, 180, 180, 0]   # 152: Coastline
+                - [160, 160, 160, 0]   # 153: Inland water
+                - [140, 140, 140, 0]   # 200: Cloud Test
+                - [120, 120, 120, 0]   # 215: Cloud Test Day
+              values: [-99, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 30, 31, 32, 33, 34, 35, 40, 50, 60, 100, 120, 121, 123, 124, 125, 126, 127, 151, 152, 153, 200, 215]
+              interpolation: nearest
+              color_scale: 255
+          out_of_range: [0, 0, 0, 255]
+          fill_value: [0, 0, 0, 255]

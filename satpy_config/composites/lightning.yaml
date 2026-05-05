@@ -1,0 +1,11 @@
+sensor_name: glm_l2
+
+composites:
+  lightning_heatmap:
+    compositor: !!python/name:lightning_utils.LightningHeatmapCompositor
+    # Estos nombres de datasets deben coincidir con los que el lector glm_l2 produce
+    prerequisites:
+      - event_lat
+      - event_lon
+    # Opcional: puedes pasar argumentos al __init__ de tu clase aquí
+    standard_name: lightning_event_density

@@ -1,0 +1,11 @@
+# src/legion_goes/satpy_configs/enhancements/lightning.yaml
+enhancements:
+  lightning_heatmap:
+    standard_name: lightning_event_density
+    operations:
+      - name: stretch
+        method: linear
+        min_percentile: 0
+        max_percentile: 100
+      - name: colormap
+        colormap: magma  # O el nombre del colormap que prefieras
