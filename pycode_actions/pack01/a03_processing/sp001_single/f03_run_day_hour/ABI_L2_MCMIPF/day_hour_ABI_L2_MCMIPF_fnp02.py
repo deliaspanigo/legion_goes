@@ -2,10 +2,10 @@
 Path: legion_goes/pycode_actions/pack01/a03_processing/sp001_single/f03_run_day_hour/ABI_L2_MCMIPF/day_hour_ABI_L2_MCMIPF_fnp02.py
 Version: 0.0.2 (Simple & Robust Main)
 Description: FNP02 - MCMIPF with Universal Path Detection.
-Last modification: 05-05-2026 22:50
+Last modification: 05-05-2026 22:45
 """
 # ================================================================================================================================================
-#  Execution: python3 -m  legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f03_run_day_hour.ABI_L2_MCMIPF.day_hour_ABI_L2_MCMIPF_fnp02
+#  Execution: python3 -m legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f03_run_day_hour.ABI_L2_MCMIPF.day_hour_ABI_L2_MCMIPF_fnp02
 # ================================================================================================================================================
 
 # Libraries
@@ -19,9 +19,9 @@ import logging
 from contextlib import contextmanager
 from pathlib import Path
 from datetime import datetime
+import re
 from satpy import Scene
 from pyresample.geometry import AreaDefinition
-import re
 
 # Local Libraries Fixed
 from legion_goes.pycode_actions.pack01.fn_common.get_sat_id_by_date import get_sat_id_by_date
@@ -32,11 +32,14 @@ from legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f02_runners.A
 
 
 def run_day_hour_ABI_L2_MCMIPF_fnp02(position: str, year: str, day: str, hour: str):
-    # 1. Get Satellite ID
+    """
+    Orchestrates the processing of a specific hour or an entire day (ALL).
+    """
+    # 1. Retrieve Satellite ID
     sat_id = get_sat_id_by_date(position=position, year=year, day=day)
     product_id = "ABI-L2-MCMIPF"  # Hyphenated to match folder structure
     
-    # 2. Handle "ALL" logic vs Specific Hour
+    # 2. Handle "ALL" logic vs specific Hour
     if hour.upper() == "ALL":
         # Generates list ['00', '01', ..., '23']
         hours_to_process = [str(h).zfill(2) for h in range(24)]
@@ -67,7 +70,7 @@ def run_day_hour_ABI_L2_MCMIPF_fnp02(position: str, year: str, day: str, hour: s
                 run_runner_ABI_L2_MCMIPF_fnp02(nc_path=str(nc_file))
             except Exception as e:
                 print(f"❌ Error processing {nc_file.name}: {e}")
-                continue # Move to the next file if one fails
+                continue # Continue with next file even if one fails
 
 # =============================================================================
 # DIAGNOSTIC MAIN
@@ -75,10 +78,12 @@ def run_day_hour_ABI_L2_MCMIPF_fnp02(position: str, year: str, day: str, hour: s
 if __name__ == "__main__":
     print("\n" + " FNP02: MCMIPF DAY-HOUR RUNNER ".center(80, "="))
     
-    # You can pass "ALL" to process all 24 hour folders
+    # Example execution: processing a specific day and hour
+    # This automatically detects the satellite (16, 17, 18, or 19) based on the date
     try:
+        # Toggle between "ALL" or a specific hour like "12"
         run_day_hour_ABI_L2_MCMIPF_fnp02(
-            position = "WEST", 
+            position = "EAST", 
             year     = "2026", 
             day      = "003", 
             hour     = "ALL"

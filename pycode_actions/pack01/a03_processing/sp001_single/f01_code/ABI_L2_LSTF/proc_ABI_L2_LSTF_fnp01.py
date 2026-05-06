@@ -26,7 +26,7 @@ import re
 
 
 # --- SOT LIBRARIES (Para el core de procesamiento) ---
-from legion_goes.sot.folders_hardcoded.access.get_SOT_specific_folder import get_SOT_specific_folder   # Cache Folder!
+from legion_goes.satpy_config.my_config_satpy import CACHE_DIR   # Cache Folder!
 from legion_goes.pycode_actions.pack01.fn_common.get_sat_id_by_date import get_sat_id_by_date
 from legion_goes.pycode_actions.pack01.fn_common.get_position_by_sat_id import get_position_by_sat_id
 
@@ -35,6 +35,7 @@ from legion_goes.pycode_actions.pack01.fn_common.get_position_by_sat_id import g
 # =============================================================================
 
 def gen_dict_output_file_name(nc_path): 
+
 
     nc_file_name = Path(nc_path).name
     match = re.search(r"OR_(?P<prod>ABI-L2-[A-Z0-9]+)-.*_(?P<sat>G\d{2})_s(?P<start>\d{14})", nc_file_name)
@@ -78,10 +79,13 @@ def run_proc_ABI_L2_LSTF_fnp01(nc_path, **kwargs):
     file_path = Path(nc_path)
     
     # Cache path usando SOT
-    try:
-        path_cache = get_SOT_specific_folder("proc_core01") / ".cache_pyresample"
-    except:
-        path_cache = Path.cwd() / ".cache_pyresample"
+    path_cache = CACHE_DIR
+    resample_kwargs = {
+        'cache_dir': str(path_cache),
+        'nprocs': 4,              # Usa más núcleos para el cálculo inicial
+        'static_data': True       # Fuerza a tratar la geometría como fija
+    }
+    my_chunks = {'y': 1024, 'x': 1024}
     
     try:
         # -----------------------------------------------------------------------------------------------------------------
@@ -93,7 +97,8 @@ def run_proc_ABI_L2_LSTF_fnp01(nc_path, **kwargs):
         
         # -----------------------------------------------------------------------------------------------------------------
         print(f"\n      [Step 01/06] 🛰️   Loading LST Scene...", end=" ", flush=True)
-        scn = Scene(filenames=[str(file_path)], reader='abi_l2_nc')
+        #########scn = Scene(filenames=[str(file_path)], reader='abi_l2_nc')
+        scn = Scene(filenames=[str(file_path)], reader='abi_l2_nc', reader_kwargs={'chunks': my_chunks})
         prod_raw  = 'LST' # IS NOT LSTF THE NAME INSIDE .nc files!!!!!!!!!!!! ##########################
         prod_color = 'lst_celsius_color01'  #Special processing created by me.
         scn.load([prod_raw])
@@ -115,7 +120,8 @@ def run_proc_ABI_L2_LSTF_fnp01(nc_path, **kwargs):
         # -----------------------------------------------------------------------------------------------------------------
         print(f"      [Step 03/06] 🔄  Resampling GOES projection to WGS84...", end=" ", flush=True)
         area_def = AreaDefinition('wgs84', 'Global', 'epsg4326', 'EPSG:4326', 3600, 1800, [-180, -90, 180, 90])
-        scn_res = scn.resample(area_def, resampler='kd_tree', cache_dir=str(path_cache))
+        #####scn_res = scn.resample(area_def, resampler='kd_tree', cache_dir=str(path_cache))
+        scn_res = scn.resample(area_def, resampler='kd_tree', **resample_kwargs)
         print("Done.")
 
         # -----------------------------------------------------------------------------------------------------------------
@@ -177,11 +183,12 @@ if __name__ == "__main__":
         print("-" * 80)
 
         # Inject output paths
-        #test_paths = {k: str(test_out / v) for k, v in dict_output_schema.items()}
-        test_paths = gen_dict_output_file_name(nc_path=str(target_nc))
+        dict_output_file_name = gen_dict_output_file_name(nc_path=str(target_nc))
+        dict_output_file_path = {k: str(test_out / v) for k, v in dict_output_file_name.items()}
+
         
         # Execute processing
-        success = run_proc_ABI_L2_LSTF_fnp01(nc_path=str(target_nc), **test_paths)
+        success = run_proc_ABI_L2_LSTF_fnp01(nc_path=str(target_nc), **dict_output_file_path)
         
         if success:
             print("-" * 80 + "\n✅ TEST COMPLETED SUCCESSFULLY\n" + "=" * 80)

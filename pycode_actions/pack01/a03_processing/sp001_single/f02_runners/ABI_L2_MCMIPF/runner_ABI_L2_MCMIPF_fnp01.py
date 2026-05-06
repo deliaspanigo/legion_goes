@@ -23,8 +23,9 @@ import numpy as np
 import re
 
 # --- Local Libraries ---
-from legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f01_code.ABI_L2_MCMIPF.proc_ABI_L2_MCMIPF_fnp01 import dict_output_schema
+from legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f01_code.ABI_L2_MCMIPF.proc_ABI_L2_MCMIPF_fnp01 import gen_dict_output_file_name 
 from legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f01_code.ABI_L2_MCMIPF.proc_ABI_L2_MCMIPF_fnp01 import run_proc_ABI_L2_MCMIPF_fnp01
+from legion_goes.pycode_actions.pack01.fn_common.get_position_by_sat_id import get_position_by_sat_id
 
 # =============================================================================
 # SILENCING UTILITIES (Surgical)
@@ -77,38 +78,49 @@ def gen_str_folder_output(nc_path):
     if not match:
         raise ValueError(f"Could not parse file format: {nc_file_name}")
 
+    # Extract data from match
     str_prod = match.group("prod")
     str_sat = match.group("sat")
     str_sat_number = str_sat[1:]
-    str_stimestamp = match.group("start")
+    str_stimestamp = match.group("start") 
+    str_stimestamp_mod = f"s{str_stimestamp}"
+    str_position = get_position_by_sat_id(sat_id = str_sat_number)
     
     str_year = str_stimestamp[0:4]
     str_day  = str_stimestamp[4:7]
     str_hour = str_stimestamp[7:9]
     
     str_bucket = "noaa-goes" + str_sat_number
+    str_bucket_mod = f"{str_bucket}-{str_position}"
     str_prod_fnp = str_prod + "_fnp01"
     
-    return (
+    
+    str_output_folder = (
         Path("data_proc") / 
         "sp01_single" / 
-        str_bucket /
+        str_bucket_mod /
         str_prod / 
         str_year / 
         str_day / 
         str_hour / 
-        str_stimestamp / 
+        str_stimestamp_mod / 
         str_prod_fnp
     )
+    
+    return str_output_folder
 
 def gen_dict_path_output(nc_path):
     working_dir = Path.cwd() 
     str_folder = gen_str_folder_output(nc_path)
+    
     str_output_folder_path = working_dir / str_folder
     str_output_folder_path.mkdir(parents=True, exist_ok=True)
     
-    dict_path_output = {k: (str_output_folder_path / v) for k, v in dict_output_schema.items()}
-    return dict_path_output
+    # Map filenames to Path objects (instead of strings) for validation
+    dict_output_file_name = gen_dict_output_file_name(nc_path=str(nc_path))
+    dict_output_file_path = {k: (str_output_folder_path / v) for k, v in dict_output_file_name.items()}
+    
+    return dict_output_file_path
 
 def is_processing_complete(output_dict: dict) -> bool:
     for p in output_dict.values():
@@ -122,6 +134,8 @@ def is_processing_complete(output_dict: dict) -> bool:
 
 def run_runner_ABI_L2_MCMIPF_fnp01(nc_path):
     nc_path = Path(nc_path)
+    
+    # 1. Get expected output paths as Path objects
     dict_path_output = gen_dict_path_output(nc_path=nc_path)
     
     if is_processing_complete(dict_path_output):

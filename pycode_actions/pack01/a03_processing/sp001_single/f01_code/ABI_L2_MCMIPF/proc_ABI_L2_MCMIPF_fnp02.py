@@ -26,18 +26,47 @@ from datetime import datetime
 from contextlib import contextmanager
 from satpy import Scene
 from pyresample.geometry import AreaDefinition
+import re 
 
+# --- Local  Libraries
+from legion_goes.satpy_config.my_config_satpy import CACHE_DIR   # Cache Folder!
+from legion_goes.pycode_actions.pack01.fn_common.get_sat_id_by_date import get_sat_id_by_date
+from legion_goes.pycode_actions.pack01.fn_common.get_position_by_sat_id import get_position_by_sat_id
 
 # =============================================================================
 # 1. OUTPUT DEFINITION DICTIONARY
 # =============================================================================
-dict_output_schema = {
-    "png_CRSnative_ir": "CRS-GoesEast_IR_Colorized.png",
-    "png_CRSnative_ir_transparent": "CRS-GoesEast_IR_Colorized_Transparent.png",
-    "png_CRSwgs84_ir": "CRS-WGS84_IR_Colorized.png",
-    "png_CRSwgs84_ir_transparent": "CRS-WGS84_IR_Colorized_Transparent.png",
-    "tif_CRSwgs84_ir": "CRS-WGS84_IR_Colorized.tif"
-}
+
+def gen_dict_output_file_name(nc_path): 
+
+    nc_file_name = Path(nc_path).name
+    match = re.search(r"OR_(?P<prod>ABI-L2-[A-Z0-9]+)-.*_(?P<sat>G\d{2})_s(?P<start>\d{14})", nc_file_name)
+    
+    if not match:
+        raise ValueError(f"Could not parse file format: {nc_file_name}")
+
+    # Extract data from match
+    str_prod = match.group("prod")
+    str_sat = match.group("sat")
+    str_sat_number = str_sat[1:]
+    str_stimestamp = match.group("start") 
+    str_position = get_position_by_sat_id(sat_id = str_sat_number)
+    
+    str_name = f"SP-01-simple_G{str_sat_number}-{str_position}-s{str_stimestamp}"
+    
+    
+    dict_output_schema = {
+        "png_CRSnative_ir":             f"{str_name}_CRS-Goes{str_position}_MCMIPF-fnp02-IR_Colorized.png",
+        "png_CRSnative_ir_transparent": f"{str_name}_CRS-Goes{str_position}_MCMIPF-fnp02-IR_Colorized_Transparent.png",
+        "png_CRSwgs84_ir":              f"{str_name}_CRS-WGS84_MCMIPF-fnp02-IR-Colorized.png",
+        "png_CRSwgs84_ir_transparent":  f"{str_name}_CRS-WGS84_MCMIPF-fnp02-IR-Colorized-Transparent.png",
+        "tif_CRSwgs84_ir":              f"{str_name}_CRS-WGS84_MCMIPF-fnp02-IR-Colorized.tif"
+    }
+
+    
+    return dict_output_schema
+    
+
 
 # =============================================================================
 # 2. INTERNAL UTILITIES
@@ -66,6 +95,17 @@ def run_proc_ABI_L2_MCMIPF_fnp02(nc_path, **kwargs):
     Executes the FNP02 pipeline for Colorized IR.
     """
     start_time = time.time()
+    file_path = Path(nc_path)
+    
+    # Cache path usando SOT
+    path_cache = CACHE_DIR
+    resample_kwargs = {
+        'cache_dir': str(path_cache),
+        'nprocs': 4,              # Usa más núcleos para el cálculo inicial
+        'static_data': True       # Fuerza a tratar la geometría como fija
+    }
+    my_chunks = {'y': 1024, 'x': 1024}
+    
     try:
         # -----------------------------------------------------------------------------------------------------------------
         # Output folder
@@ -76,7 +116,8 @@ def run_proc_ABI_L2_MCMIPF_fnp02(nc_path, **kwargs):
 
         # -----------------------------------------------------------------------------------------------------------------
         print(f"      [Step 01/09] 🛰️   Loading IR Product...", end=" ", flush=True)
-        scn = Scene(filenames=[str(nc_path)], reader='abi_l2_nc')
+        ####scn = Scene(filenames=[str(nc_path)], reader='abi_l2_nc')
+        scn = Scene(filenames=[str(file_path)], reader='abi_l2_nc', reader_kwargs={'chunks': my_chunks})
         product_id = 'colorized_ir_clouds'
         scn.load([product_id])
         print("Done.")
@@ -94,16 +135,18 @@ def run_proc_ABI_L2_MCMIPF_fnp02(nc_path, **kwargs):
 
         # -----------------------------------------------------------------------------------------------------------------
         print(f"      [Step 04/09] 🗺️   Defining WGS84 Area...", end=" ", flush=True)
-        area_def = AreaDefinition(
-            'wgs84', 'LatLon', 'wgs84',
-            {'proj': 'eqc', 'units': 'm', 'ellps': 'WGS84'},
-            3600, 1800, (-20037508.34, -10018754.17, 20037508.34, 10018754.17)
-        )
+        #area_def = AreaDefinition(
+        #    'wgs84', 'LatLon', 'wgs84',
+        #    {'proj': 'eqc', 'units': 'm', 'ellps': 'WGS84'},
+        #    3600, 1800, (-20037508.34, -10018754.17, 20037508.34, 10018754.17)
+        #)
+        area_def = AreaDefinition('wgs84', 'Global', 'epsg4326', 'EPSG:4326', 3600, 1800, [-180, -90, 180, 90])
         print("Done.")
         
         # -----------------------------------------------------------------------------------------------------------------
         print(f"      [Step 05/09] 🔄  Resampling Scene to WGS84...", end=" ", flush=True)
-        scn_res = scn.resample(area_def)
+        #####scn_res = scn.resample(area_def)
+        scn_res = scn.resample(area_def, resampler='kd_tree', **resample_kwargs)
         print("Done.")
 
         # -----------------------------------------------------------------------------------------------------------------
@@ -145,36 +188,48 @@ def run_proc_ABI_L2_MCMIPF_fnp02(nc_path, **kwargs):
 # DIAGNOSTIC MAIN (Local testing only)
 # =============================================================================
 if __name__ == "__main__":
+    # --- CONTEXT INJECTION ---
     try:
         from legion_goes.satpy_config import my_config_satpy
-        print("✅ Global Satpy Config loaded.")
+        print("✅ Global Satpy Config loaded for diagnostic test.")
     except ImportError:
         print("⚠️  Global config not found. Running with Satpy defaults.")
 
-    print("\n" + " CODE MCMIPF FNP02: IN-SITU DIAGNOSTIC TEST ".center(80, "="))
+    print("\n" + " FNP02: IN-SITU DIAGNOSTIC TEST ".center(80, "="))
     
+    # 1. Execution Path
     working_dir = Path.cwd() 
     current_dir = working_dir / "test_one_image"
     nc_candidates = sorted(list(current_dir.glob("*MCMIPF*.nc")))
 
     if not nc_candidates:
         print(f"❌ Error: No .nc files found in {current_dir}")
+        print("💡 Place a GOES NetCDF file in this folder to test.")
     else:
         target_nc = nc_candidates[0]
+        
+        # 2. Configure Output Directory
         test_output_base = current_dir / "test_outputs" / target_nc.stem
         test_output_base.mkdir(parents=True, exist_ok=True)
 
-        test_paths = {k: str(test_output_base / v) for k, v in dict_output_schema.items()}
-
-        print(f"🎯 Target NC file: {target_nc.name}")
+        print(f"🎯 FILE  : {target_nc.name}")
+        print(f"📂 OUTPUT: {test_output_base}")
         print("-" * 80)
 
-        success = run_proc_ABI_L2_MCMIPF_fnp02(nc_path=str(target_nc), **test_paths)
+        # Inject output paths
+        dict_output_file_name = gen_dict_output_file_name(nc_path=str(target_nc))
+        dict_output_file_path = {k: str(test_output_base / v) for k, v in dict_output_file_name.items()}
+
+        
+        # 4. Execute Core with the Splat Operator (**)
+        success = run_proc_ABI_L2_MCMIPF_fnp02(nc_path=str(target_nc), **dict_output_file_path)
+
+
 
         if success:
             print("-" * 80)
-            print(f"✅ TEST FINISHED SUCCESSFULLY")
-            print(f"📸 Results available at: {test_output_base}")
+            print(f"✅ TEST COMPLETED SUCCESSFULLY")
+            print(f"📸 Check results in: {test_output_base}")
         else:
             print("-" * 80)
             print(f"❌ TEST FAILED. Check error messages above.")
