@@ -81,7 +81,7 @@ if __name__ == "__main__":
         # Configuration for processing
         # Use "ALL" to process all 24 hour-folders or a specific hour string (e.g., "12")
         run_day_hour_ABI_L2_LSTF_fnp01(
-            position = "WEST", 
+            position = "EAST", 
             year     = "2026", 
             day      = "003", 
             hour     = "ALL"

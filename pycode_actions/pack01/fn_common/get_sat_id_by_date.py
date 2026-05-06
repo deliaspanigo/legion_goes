@@ -20,38 +20,28 @@ from datetime import datetime
 # =============================================================================
 
 def get_sat_id_by_date(position: str, year: str, day: str) -> str:
-    """
-    Determina el satélite operativo (Serie R) según fecha y posición.
-    """
     pos = position.upper()
-    try:
-        date_query = datetime.strptime(f"{year}-{day}", "%Y-%j")
-    except ValueError:
-        raise ValueError(f"Fecha inválida: Año {year}, Día {day}. El día debe ser formato Juliano (001-366).")
+    date_query = datetime.strptime(f"{year}-{day}", "%Y-%j")
 
     if pos == "EAST":
-        # GOES-16 es el estándar East (75.2° W) desde finales de 2017.
-        # El GOES-19 está planeado para reemplazarlo, pero el 16 sigue activo.
-        return "16"
+        # A partir de 2025, el 19 reemplaza al 16 en el este
+        if date_query >= datetime(2025, 2, 1): # Fecha estimada de fin de pruebas
+            return "19"
+        else:
+            return "16"
         
     elif pos == "WEST":
-        # Cronología West (137.2° W):
-        # GOES-17: Operativo desde Feb 2019.
-        # GOES-18: Operativo desde Ene 2023 (reemplazó al 17 por fallas de enfriamiento).
-        # GOES-19: Entrando en servicio/refuerzo en 2025/2026.
-        if date_query >= datetime(2025, 1, 1):
-            return "19"
-        elif date_query >= datetime(2023, 1, 4):
+        # El 18 es el actual titular del oeste. 
+        # El 17 ya quedó como reserva/backup.
+        if date_query >= datetime(2023, 1, 1):
             return "18"
         else:
             return "17"
-    else:
-        raise ValueError("La posición debe ser 'EAST' o 'WEST'.")
 
 
 if __name__ == "__main__":
     # Test correcto (todos strings)
-    sat_number = get_sat_id_by_date(position="WEST", year="2026", day="003")
+    sat_number = get_sat_id_by_date(position="EAST", year="2026", day="003")
     print(f"Resultado del Test: {sat_number}")
     # Esto lanzaría un TypeError por culpa del 2026 (int):
     # run_action02_download_files("19", "ABI-L2-LSTF", 2026, "003", "ALL")

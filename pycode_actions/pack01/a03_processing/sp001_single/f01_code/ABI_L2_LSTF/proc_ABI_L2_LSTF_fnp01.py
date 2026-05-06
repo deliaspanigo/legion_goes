@@ -21,27 +21,47 @@ from pathlib import Path
 from datetime import datetime
 from satpy import Scene
 from pyresample.geometry import AreaDefinition
-
+import re
 
 
 
 # --- SOT LIBRARIES (Para el core de procesamiento) ---
 from legion_goes.sot.folders_hardcoded.access.get_SOT_specific_folder import get_SOT_specific_folder   # Cache Folder!
-
-
+from legion_goes.pycode_actions.pack01.fn_common.get_sat_id_by_date import get_sat_id_by_date
+from legion_goes.pycode_actions.pack01.fn_common.get_position_by_sat_id import get_position_by_sat_id
 
 # =============================================================================
 # 1. DICCIONARIO DE DEFINICIÓN DE SALIDAS
 # =============================================================================
-dict_output_schema = {
-    "goes_native_grey_png":  "CRS-GoesEast_LST_Grey.png",
-    "goes_native_color_png": "CRS-GoesEast_LST_Color.png",
-    "wgs84_grey_png":        "CRS-WGS84_LST_Grey.png",
-    "wgs84_color_png":       "CRS-WGS84_LST_Color.png",
-    "wgs84_grey_tif":        "CRS-WGS84_LST_Grey.tif",
-    "wgs84_color_tif":       "CRS-WGS84_LST_Color.tif"
-}
 
+def gen_dict_output_file_name(nc_path): 
+
+    nc_file_name = Path(nc_path).name
+    match = re.search(r"OR_(?P<prod>ABI-L2-[A-Z0-9]+)-.*_(?P<sat>G\d{2})_s(?P<start>\d{14})", nc_file_name)
+    
+    if not match:
+        raise ValueError(f"Could not parse file format: {nc_file_name}")
+
+    # Extract data from match
+    str_prod = match.group("prod")
+    str_sat = match.group("sat")
+    str_sat_number = str_sat[1:]
+    str_stimestamp = match.group("start") 
+    str_position = get_position_by_sat_id(sat_id = str_sat_number)
+    
+    str_name = f"SP-01-simple_G{str_sat_number}-{str_position}-s{str_stimestamp}"
+    
+    dict_output_schema = {
+        "goes_native_grey_png":  f"{str_name}_CRS-Goes{str_position}_LSTF-fnp01-Celsius-Grey.png",
+        "goes_native_color_png": f"{str_name}_CRS-Goes{str_position}_LSTF-fnp01-Celsius-Color.png",
+        "wgs84_grey_png":        f"{str_name}_CRS-WGS84_LSTF-fnp01-Celsius-Grey.png",
+        "wgs84_color_png":       f"{str_name}_CRS-WGS84_LSTF-fnp01-Celsius-Color.png",
+        "wgs84_grey_tif":        f"{str_name}_CRS-WGS84_LSTF-fnp01-Celsius-Grey.tif",
+        "wgs84_color_tif":       f"{str_name}_CRS-WGS84_LSTF-fnp01-Celsius-Color.tif"
+    }
+    
+    return dict_output_schema
+    
 # =============================================================================
 # 2. FUNCIÓN DE PROCESAMIENTO (Core Logic)
 # =============================================================================
@@ -74,7 +94,7 @@ def run_proc_ABI_L2_LSTF_fnp01(nc_path, **kwargs):
         # -----------------------------------------------------------------------------------------------------------------
         print(f"\n      [Step 01/06] 🛰️   Loading LST Scene...", end=" ", flush=True)
         scn = Scene(filenames=[str(file_path)], reader='abi_l2_nc')
-        prod_raw  = 'LST'
+        prod_raw  = 'LST' # IS NOT LSTF THE NAME INSIDE .nc files!!!!!!!!!!!! ##########################
         prod_color = 'lst_celsius_color01'  #Special processing created by me.
         scn.load([prod_raw])
         scn[prod_raw] = scn[prod_raw] - 273.15
@@ -157,7 +177,8 @@ if __name__ == "__main__":
         print("-" * 80)
 
         # Inject output paths
-        test_paths = {k: str(test_out / v) for k, v in dict_output_schema.items()}
+        #test_paths = {k: str(test_out / v) for k, v in dict_output_schema.items()}
+        test_paths = gen_dict_output_file_name(nc_path=str(target_nc))
         
         # Execute processing
         success = run_proc_ABI_L2_LSTF_fnp01(nc_path=str(target_nc), **test_paths)

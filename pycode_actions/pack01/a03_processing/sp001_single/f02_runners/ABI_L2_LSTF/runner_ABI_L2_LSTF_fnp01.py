@@ -22,9 +22,9 @@ from pathlib import Path
 from datetime import datetime
 
 # Local libraries
-from legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f01_code.ABI_L2_LSTF.proc_ABI_L2_LSTF_fnp01 import dict_output_schema
+from legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f01_code.ABI_L2_LSTF.proc_ABI_L2_LSTF_fnp01 import gen_dict_output_file_name 
 from legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f01_code.ABI_L2_LSTF.proc_ABI_L2_LSTF_fnp01 import run_proc_ABI_L2_LSTF_fnp01
-
+from legion_goes.pycode_actions.pack01.fn_common.get_position_by_sat_id import get_position_by_sat_id
 # =============================================================================
 # PATH GENERATION & SATELLITE DETECTION ENGINE
 # =============================================================================
@@ -49,6 +49,8 @@ def gen_str_folder_output(nc_path):
     str_sat = match.group("sat")
     str_sat_number = str_sat[1:]
     str_stimestamp = match.group("start") 
+    str_stimestamp_mod = f"s{str_stimestamp}"
+    str_position = get_position_by_sat_id(sat_id = str_sat_number)
     
     # Slice the start timestamp (s)
     str_year = str_stimestamp[0:4]   # 2026
@@ -56,19 +58,20 @@ def gen_str_folder_output(nc_path):
     str_hour = str_stimestamp[7:9]   # 12
     
     str_bucket = "noaa-goes" + str_sat_number
+    str_bucket_mod = f"{str_bucket}-{str_position}"
     str_prod_fnp = str_prod + "_fnp01"
     
     # Hierarchical path construction
-    # Structure: data_proc / sp01_single / noaa-goesXX / ABI-L2-LSTF / YYYY / DDD / HH / TIMESTAMP / fnp01
+    # Structure: data_proc / sp01_single / noaa-goesXX-position / ABI-L2-LSTF / YYYY / DDD / HH / TIMESTAMP_mod / fnp01
     str_output_folder = (
         Path("data_proc") / 
         "sp01_single" / 
-        str_bucket /
+        str_bucket_mod /
         str_prod / 
         str_year / 
         str_day / 
         str_hour / 
-        str_stimestamp / 
+        str_stimestamp_mod / 
         str_prod_fnp
     )
     
@@ -85,9 +88,10 @@ def gen_dict_path_output(nc_path):
     str_output_folder_path.mkdir(parents=True, exist_ok=True)
     
     # Map filenames to Path objects (instead of strings) for validation
-    dict_path_output = {k: (str_output_folder_path / v) for k, v in dict_output_schema.items()}
+    dict_output_file_name = gen_dict_output_file_name(nc_path=str(nc_path))
+    dict_output_file_path = {k: (str_output_folder_path / v) for k, v in dict_output_file_name.items()}
     
-    return dict_path_output
+    return dict_output_file_path
     
 def is_processing_complete(output_dict: dict) -> bool:
     """
