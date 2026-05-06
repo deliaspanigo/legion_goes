@@ -136,26 +136,48 @@ def is_processing_complete(output_dict: dict) -> bool:
 # RUNNER CORE
 # =============================================================================
 
-def run_runner_ABI_L2_MCMIPF_fnp02(nc_path):
+def run_runner_ABI_L2_MCMIPF_fnp02(nc_path, overwrite=False):
+    """
+    Main runner logic for MCMIPF fnp02: includes diagnostic skip-logic,
+    surgical silencing, and mosaic generation.
+    """
     nc_path = Path(nc_path)
+    
+    # 1. Get expected output paths as Path objects
     dict_path_output = gen_dict_path_output(nc_path=nc_path)
     
-    if is_processing_complete(dict_path_output):
-        print(f"  [SKIPPED] {nc_path.name} (Outputs OK)")
+    # 2. Diagnostic: Check current status
+    exists_count = sum(1 for p in dict_path_output.values() if p.exists())
+    total_expected = len(dict_path_output)
+    all_exist = exists_count == total_expected
+
+    # 3. Decision Logic & Specialized Printing
+    if all_exist and not overwrite:
+        print(f"  [SKIPPED]     {nc_path.name} (All {total_expected} outputs exist)")
         return
 
-    for p in dict_path_output.values():
-        if p.exists(): p.unlink()
+    # Determine the reason for processing
+    if overwrite and all_exist:
+        reason = "OVERWRITE (Forced by user)"
+    elif exists_count > 0:
+        reason = f"INCOMPLETE ({exists_count}/{total_expected} files found, fixing...)"
+    else:
+        reason = "NEW (No previous outputs found)"
 
-    print(f"  [PROCESSING] {nc_path.name}...")
+    print(f"  [PROCESSING]  {nc_path.name}")
+    print(f"                Reason: {reason}")
+
+    # 4. Clean up before reprocessing
+    for p in dict_path_output.values():
+        if p.exists(): 
+            p.unlink()
+
+    # 5. Execute core processing and Mosaic Generation
     dict_str_paths = {k: str(v) for k, v in dict_path_output.items()}
     
     try:
         with silence_runner_noise():
             run_proc_ABI_L2_MCMIPF_fnp02(nc_path=str(nc_path), **dict_str_paths)
-        
-        # Generar mosaico al finalizar
-        generate_comparison_mosaic(dict_path_output)
             
     except Exception as e:
         print(f"  ❌ Error processing {nc_path.name}: {e}")
@@ -171,5 +193,5 @@ if __name__ == "__main__":
     if not nc_candidates:
         print(f"❌ No .nc files found in: {working_dir}")
     else:
-        run_runner_ABI_L2_MCMIPF_fnp02(nc_path=nc_candidates[0])
+        run_runner_ABI_L2_MCMIPF_fnp02(nc_path=nc_candidates[0],overwrite=True)
         print("-" * 80 + "\n✅ PROCESS FINISHED\n" + "=" * 80)

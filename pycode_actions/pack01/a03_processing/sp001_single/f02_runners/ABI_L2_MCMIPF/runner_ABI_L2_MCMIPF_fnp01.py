@@ -132,24 +132,45 @@ def is_processing_complete(output_dict: dict) -> bool:
 # RUNNER CORE
 # =============================================================================
 
-def run_runner_ABI_L2_MCMIPF_fnp01(nc_path):
+def run_runner_ABI_L2_MCMIPF_fnp01(nc_path, overwrite=False):
+    """
+    Main runner logic for MCMIPF: manages skip-logic with detailed diagnostics,
+    surgical silencing, and core execution.
+    """
     nc_path = Path(nc_path)
     
     # 1. Get expected output paths as Path objects
     dict_path_output = gen_dict_path_output(nc_path=nc_path)
     
-    if is_processing_complete(dict_path_output):
-        print(f"  [SKIPPED] {nc_path.name} (Outputs Size OK)")
+    # 2. Diagnostic: Check current status
+    exists_count = sum(1 for p in dict_path_output.values() if p.exists())
+    total_expected = len(dict_path_output)
+    all_exist = exists_count == total_expected
+
+    # 3. Decision Logic & Specialized Printing
+    if all_exist and not overwrite:
+        print(f"  [SKIPPED]     {nc_path.name} (All {total_expected} outputs exist)")
         return
 
+    # Determine the reason for processing
+    if overwrite and all_exist:
+        reason = "OVERWRITE (Forced by user)"
+    elif exists_count > 0:
+        reason = f"INCOMPLETE ({exists_count}/{total_expected} files found, fixing...)"
+    else:
+        reason = "NEW (No previous outputs found)"
+
+    print(f"  [PROCESSING]  {nc_path.name}")
+    print(f"                Reason: {reason}")
+
+    # 4. Clean up before reprocessing
     for p in dict_path_output.values():
-        if p.exists(): p.unlink()
+        if p.exists(): 
+            p.unlink()
 
-    print(f"  [PROCESSING] {nc_path.name}...")
-
+    # 5. Execute core processing with Surgical Silencing
     dict_str_paths = {k: str(v) for k, v in dict_path_output.items()}
     
-    # --- EXECUTION WITH SURGICAL SILENCING ---
     try:
         with silence_runner_noise():
             run_proc_ABI_L2_MCMIPF_fnp01(nc_path=str(nc_path), **dict_str_paths)
@@ -169,5 +190,5 @@ if __name__ == "__main__":
         print(f"❌ Error: No .nc files with 'MCMIPF' found in: {working_dir}")
     else:
         target_nc = nc_candidates[0]
-        run_runner_ABI_L2_MCMIPF_fnp01(nc_path=target_nc)
+        run_runner_ABI_L2_MCMIPF_fnp01(nc_path=target_nc, overwrite = True)
         print("-" * 80 + "\n✅ TEST FINISHED\n" + "=" * 80)
