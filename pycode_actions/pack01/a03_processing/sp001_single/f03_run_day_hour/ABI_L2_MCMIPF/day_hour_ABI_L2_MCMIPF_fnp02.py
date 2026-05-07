@@ -31,7 +31,7 @@ from legion_goes.pycode_actions.pack01.fn_common.gen_str_path_folder_raw_until_h
 from legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f02_runners.ABI_L2_MCMIPF.runner_ABI_L2_MCMIPF_fnp02 import run_runner_ABI_L2_MCMIPF_fnp02
 
 
-def run_day_hour_ABI_L2_MCMIPF_fnp02(position: str, year: str, day: str, hour: str):
+def run_day_hour_ABI_L2_MCMIPF_fnp02(position: str, year: str, day: str, hour: str, overwrite = False):
     """
     Orchestrates the processing of a specific hour or an entire day (ALL).
     """
@@ -67,7 +67,7 @@ def run_day_hour_ABI_L2_MCMIPF_fnp02(position: str, year: str, day: str, hour: s
         for nc_file in nc_candidates:
             print(f"🚀 Executing: {nc_file.name}")
             try:
-                run_runner_ABI_L2_MCMIPF_fnp02(nc_path=str(nc_file))
+                run_runner_ABI_L2_MCMIPF_fnp02(nc_path=str(nc_file), overwrite = overwrite)
             except Exception as e:
                 print(f"❌ Error processing {nc_file.name}: {e}")
                 continue # Continue with next file even if one fails
