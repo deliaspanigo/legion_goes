@@ -4,6 +4,9 @@ Version: 0.2.5 (Strict Pixel Dimensions)
 Description: Forced pixel resolution by removing bbox_inches='tight'.
 Last modification: 07-05-2026 22:45
 """
+# ========================================================================================================================================
+#  Execution: python3 -m  legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f01_code.GLM_L2_LCFA.proc_GLM_L2_LCFA_fnp01
+# ========================================================================================================================================
 
 import os
 import time
@@ -36,7 +39,7 @@ def gen_dict_output_file_name(nc_path):
         "plot_w84":  f"{str_name}_LCFA-fnp01_VIEW-WGS84.png"
     }
 
-def run_proc_GL_L2_LCFA_fnp01(nc_path, **kwargs):
+def run_proc_GLM_L2_LCFA_fnp01(nc_path, **kwargs):
     start_time = time.time()
     file_path = Path(nc_path)
     
@@ -125,6 +128,6 @@ if __name__ == "__main__":
         print(f"🎯 TARGET: {target_nc.name}")
         output_paths = {k: str(test_out / v) for k, v in gen_dict_output_file_name(str(target_nc)).items()}
 
-        if run_proc_GL_L2_LCFA_fnp01(str(target_nc), **output_paths):
+        if run_proc_GLM_L2_LCFA_fnp01(str(target_nc), **output_paths):
             print("-" * 80 + f"\n✅ SUCCESS. WGS84 is exactly 3600x1800. Results in: {test_out}")
     print("=" * 80 + "\n")

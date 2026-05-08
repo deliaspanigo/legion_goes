@@ -49,6 +49,14 @@ def gen_dict_output_file_name(nc_path):
         "goes_native_color03_png": f"{str_name}_CRS-Goes{str_position}_FDCF-fnp01-color03.png",
         "wgs84_color03_tif":       f"{str_name}_CRS-WGS84_FDCF-fnp01-color03.tif",
         "wgs84_color03_png":       f"{str_name}_CRS-WGS84_FDCF-fnp01-color03.png",
+        
+        "goes_native_color04_png": f"{str_name}_CRS-Goes{str_position}_FDCF-fnp01-color04.png",
+        "wgs84_color04_tif":       f"{str_name}_CRS-WGS84_FDCF-fnp01-color04.tif",
+        "wgs84_color04_png":       f"{str_name}_CRS-WGS84_FDCF-fnp01-color04.png",
+        
+        "goes_native_color05_png": f"{str_name}_CRS-Goes{str_position}_FDCF-fnp01-color05.png",
+        "wgs84_color05_tif":       f"{str_name}_CRS-WGS84_FDCF-fnp01-color05.tif",
+        "wgs84_color05_png":       f"{str_name}_CRS-WGS84_FDCF-fnp01-color05.png",
     }
 
 # =============================================================================
@@ -136,6 +144,40 @@ def run_proc_ABI_L2_FDCF_fnp01(nc_path, **kwargs):
         gc.collect()
         print("      Done and Cleared.")
 
+        # --- BLOQUE INDEPENDIENTE: COLOR 04 ---
+        print(f"      [Step 03/03] 🛰️  Processing Color 03 (my_fdc_fn04)...", flush=True)
+        prod_04 = 'my_fdc_fn04'
+        scn.load([prod_04])
+        
+        scn.save_dataset(prod_04, filename=kwargs.get("goes_native_color04_png"), writer='simple_image')
+        
+        ######scn_res_04 = scn.resample(area_def, resampler='kd_tree', cache_dir=str(path_cache))
+        scn_res_04 = scn.resample(area_def, resampler='kd_tree', **resample_kwargs)
+        scn_res_04.save_dataset(prod_04, filename=kwargs.get("wgs84_color04_tif"), writer='geotiff')
+        scn_res_04.save_dataset(prod_04, filename=kwargs.get("wgs84_color04_png"), writer='simple_image')
+        
+        del scn_res_04
+        scn.unload(prod_04)
+        gc.collect()
+        print("      Done and Cleared.")
+        
+        # --- BLOQUE INDEPENDIENTE: COLOR 05 ---
+        print(f"      [Step 03/03] 🛰️  Processing Color 03 (my_fdc_fn05)...", flush=True)
+        prod_04 = 'my_fdc_fn05'
+        scn.load([prod_05])
+        
+        scn.save_dataset(prod_05, filename=kwargs.get("goes_native_color04_png"), writer='simple_image')
+        
+        ######scn_res_05 = scn.resample(area_def, resampler='kd_tree', cache_dir=str(path_cache))
+        scn_res_05 = scn.resample(area_def, resampler='kd_tree', **resample_kwargs)
+        scn_res_05.save_dataset(prod_05, filename=kwargs.get("wgs84_color05_tif"), writer='geotiff')
+        scn_res_05.save_dataset(prod_05, filename=kwargs.get("wgs84_color05_png"), writer='simple_image')
+        
+        del scn_res_05
+        scn.unload(prod_05)
+        gc.collect()
+        print("      Done and Cleared.")
+        
         # --- FINALIZACIÓN ---
         duration = round(time.time() - start_time, 2)
         print(f"\n      [Summary] Total time: {duration}s | Status: Success")

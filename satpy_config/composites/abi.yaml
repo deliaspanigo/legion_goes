@@ -36,3 +36,15 @@ composites:
       - name: Mask
     modifiers: []
     standard_name: "my_fdc_fn03" # <--- Unificado
+  my_fdc_fn04:
+    compositor: !!python/name:satpy.composites.core.GenericCompositor
+    prerequisites:
+      - name: Mask
+    modifiers: []
+    standard_name: "my_fdc_fn04" # <--- Unificado
+  my_fdc_fn05:
+    compositor: !!python/name:satpy.composites.core.GenericCompositor
+    prerequisites:
+      - name: Mask
+    modifiers: []
+    standard_name: "my_fdc_fn05" # <--- Unificado

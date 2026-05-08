@@ -11,6 +11,7 @@ from legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f03_run_day_h
 from legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f03_run_day_hour.ABI_L2_MCMIPF.day_hour_ABI_L2_MCMIPF_fnp01 import run_day_hour_ABI_L2_MCMIPF_fnp01
 from legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f03_run_day_hour.ABI_L2_MCMIPF.day_hour_ABI_L2_MCMIPF_fnp02 import run_day_hour_ABI_L2_MCMIPF_fnp02
 from legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f03_run_day_hour.ABI_L2_FDCF.day_hour_ABI_L2_FDCF_fnp01     import run_day_hour_ABI_L2_FDCF_fnp01
+from legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f03_run_day_hour.GLM_L2_LCFA.day_hour_GLM_L2_LCFA_fnp01     import run_day_hour_GLM_L2_LCFA_fnp01
 
 def run_pack01_02_processing(position: str, year: str, day: str, hour: str):
     """
@@ -30,6 +31,9 @@ def run_pack01_02_processing(position: str, year: str, day: str, hour: str):
     
     print(f"--- Iniciando Procesamiento: FDCF (FNP01) ---")
     run_day_hour_ABI_L2_FDCF_fnp01(position=position, year=year, day=day, hour=hour, overwrite=False)
+    
+    print(f"--- Iniciando Procesamiento: GLM_L2_LCFA (FNP01) ---")
+    run_day_hour_GLM_L2_LCFA_fnp01(position=position, year=year, day=day, hour=hour, overwrite=False)
 # ===================================================================
 # MAIN EXECUTION (Vínculo con fabricar.sh)
 # ===================================================================
