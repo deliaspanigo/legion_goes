@@ -96,8 +96,7 @@ def gen_str_folder_output(nc_path):
     
     
     str_output_folder = (
-        Path("data_proc") / 
-        "sp01_single" / 
+        Path("sp01_single") / 
         str_bucket_mod /
         str_prod / 
         str_year / 

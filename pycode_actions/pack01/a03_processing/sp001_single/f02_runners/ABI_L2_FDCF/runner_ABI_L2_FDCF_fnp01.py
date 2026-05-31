@@ -21,7 +21,8 @@ def gen_str_folder_output(nc_path):
     Parses the NC filename to generate a hierarchical output folder structure.
 
     Important:
-    This returned path is relative to data_proc, matching the current MCMIPF layout.
+    This returned path is relative to data_proc.
+    It must NOT include Path("data_proc").
     """
 
     nc_file_name = Path(nc_path).name
@@ -49,8 +50,7 @@ def gen_str_folder_output(nc_path):
     str_prod_fnp = str_prod + "_fnp01"
 
     return (
-        Path("data_proc")
-        / "sp01_single"
+        Path("sp01_single")
         / str_bucket_mod
         / str_prod
         / str_year

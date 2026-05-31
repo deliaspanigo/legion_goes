@@ -113,7 +113,7 @@ def gen_str_folder_output(nc_path):
     str_pos = get_position_by_sat_id(sat_id = str_sat_num)
     
     str_output_folder = (
-        Path("data_proc") / "sp01_single" / f"noaa-goes{str_sat_num}-{str_pos}" /
+        Path("sp01_single") / f"noaa-goes{str_sat_num}-{str_pos}" /
         str_prod / str_stimestamp[0:4] / str_stimestamp[4:7] / str_stimestamp[7:9] /
         f"s{str_stimestamp}" / f"{str_prod}_fnp02"
     )
