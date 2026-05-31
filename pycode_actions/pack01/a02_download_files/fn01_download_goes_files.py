@@ -22,11 +22,11 @@ from legion_goes.pycode_actions.pack01.fn_common.gen_str_path_folder_raw_until_h
 
 # =================================================================================================================================
 # 1. DOWNLOAD CORE
-# Description: La funcion descargara todos los archivos disponbiles para la posicion, produto,year, day y hora.
-# La hora puede ser un valor unico o ser ALL.
-# Si el archivo existe localmente, verifica que el peso del  archivo local sea igual al archivo online.
+# Description: The function downloads all available files for the position, product, year, day, and hour.
+# The hour can be a single value or ALL.
+# Si el file existe localmente, verifica que el peso del  file local sea igual al file online.
 # Si son iguales los pesos, no lo d escarga. SI hay diferentecias, borrael local y  realiza l a d escarga.
-# Si el archivo no e xiste  localemtne, inicia la d escarga.
+# Si el file no e xiste  localemtne, inicia la d escarga.
 # =================================================================================================================================
 
 def download_goes_files(position: str, product: str, year: str, day: str, hour: str):
@@ -55,7 +55,7 @@ def download_goes_files(position: str, product: str, year: str, day: str, hour: 
         search_prefix = f"{base_prefix}{hour.zfill(2)}/"
     
     print("\n" + "="*80)
-    print(f"📡 SCANNING S3: s3://{bucket_name}/{search_prefix}")
+    print(f" SCANNING S3: s3://{bucket_name}/{search_prefix}")
     print("="*80)
     
     # List objects storing Key and Size using Paginator
@@ -72,10 +72,10 @@ def download_goes_files(position: str, product: str, year: str, day: str, hour: 
                     })
 
     if not files_metadata:
-        print(f"⚠️ No files found for: {product} | {year}-{day} | Hour: {hour}")
+        print(f" No files found for: {product} | {year}-{day} | Hour: {hour}")
         return
 
-    print(f"📦 Total files found: {len(files_metadata)}")
+    print(f" Total files found: {len(files_metadata)}")
 
     # File download loop
     for meta in files_metadata:
@@ -116,11 +116,11 @@ def download_goes_files(position: str, product: str, year: str, day: str, hour: 
             s3.download_file(bucket_name, s3_key, str(dest_path))
             print("OK")
         except Exception as e:
-            print(f"\n  ❌ Error in {filename}: {e}")
+            print(f"\n   Error in {filename}: {e}")
 
     print("\n" + "="*80)
-    print(f"✅ DOWNLOAD COMPLETED")
-    print(f"📂 Data stored in: {final_output_dir}")
+    print(f" DOWNLOAD COMPLETED")
+    print(f" Data stored in: {final_output_dir}")
     print("="*80 + "\n")
 
 # =============================================================================

@@ -38,23 +38,23 @@ def get_SOT_define_sat_id(position: str, year: str, day: str) -> str:
         control_year(year)
         control_day(day)
     except Exception as e:
-        error_msg = f"❌ [FUNCTION ERROR in {ctx}()]: Invalid input arguments. Details: {e}"
+        error_msg = f" [FUNCTION ERROR in {ctx}()]: Invalid input arguments. Details: {e}"
         raise type(e)(error_msg) from None
     date_str = f"{year}-{day}"
     try:
         date_obj = datetime.strptime(date_str, "%Y-%j")
     except ValueError as ve:
-        raise ValueError(f"❌ [DATE PARSE ERROR in {ctx}()]: Invalid year-day combination '{date_str}'. Details: {ve}") from None
+        raise ValueError(f" [DATE PARSE ERROR in {ctx}()]: Invalid year-day combination '{date_str}'. Details: {ve}") from None
     if position == "east":
         resolved_sat_id = "19" if date_obj >= TRANSITIONS["east_16_to_19"] else "16"
     elif position == "west":
         resolved_sat_id = "18" if date_obj >= TRANSITIONS["west_17_to_18"] else "17"
     else:
-        raise RuntimeError(f"❌ [🛡️🛡️🛡️ INTEGRITY ERROR in {ctx}()]: Unknown position '{position}' after guard validation - possible logic bypass.")
+        raise RuntimeError(f" [ INTEGRITY ERROR in {ctx}()]: Unknown position '{position}' after guard validation - possible logic bypass.")
     try:
         control_sat_id(resolved_sat_id)
     except Exception as e:
-        error_msg = f"❌ [FUNCTION ERROR in {ctx}()]: Resolved sat_id '{resolved_sat_id}' is invalid according to Source of Truth. Details: {e}"
+        error_msg = f" [FUNCTION ERROR in {ctx}()]: Resolved sat_id '{resolved_sat_id}' is invalid according to Source of Truth. Details: {e}"
         raise type(e)(error_msg) from None
     return resolved_sat_id
 
@@ -72,38 +72,38 @@ if __name__ == "__main__":
         # Test 1: Valid case - before transition (should return '16')
         sat_before = get_SOT_define_sat_id("east", "2025", "090")  # Before April 7, 2025
         assert sat_before == "16", f"Expected '16' before transition, got '{sat_before}'"
-        print("Test 1: Before transition (east, 2025-090) → ✅ OK ('16')")
+        print("Test 1: Before transition (east, 2025-090)   OK ('16')")
         tests_passed += 1
 
         # Test 2: Valid case - after transition (should return '19')
         sat_after = get_SOT_define_sat_id("east", "2025", "100")  # After April 7, 2025
         assert sat_after == "19", f"Expected '19' after transition, got '{sat_after}'"
-        print("Test 2: After transition (east, 2025-100) → ✅ OK ('19')")
+        print("Test 2: After transition (east, 2025-100)   OK ('19')")
         tests_passed += 1
 
         # Test 3: Valid west case (should return '18')
         sat_west = get_SOT_define_sat_id("west", "2025", "050")
         assert sat_west == "18", f"Expected '18' for west, got '{sat_west}'"
-        print("Test 3: West position → ✅ OK ('18')")
+        print("Test 3: West position   OK ('18')")
         tests_passed += 1
 
         # Test 4: Invalid position (uppercase)
         try:
             get_SOT_define_sat_id("EAST", "2026", "001")
-            print("Test 4: Invalid position 'EAST' → ❌ FAILED (no error)")
+            print("Test 4: Invalid position 'EAST'   FAILED (no error)")
         except Exception as e:
-            print(f"Test 4: Invalid position 'EAST' → ✅ OK (caught expected error): {e}")
+            print(f"Test 4: Invalid position 'EAST'   OK (caught expected error): {e}")
             tests_passed += 1
 
         print("\n" + f" TESTS SUMMARY: {tests_passed}/{total_tests} PASSED ".center(80, "="))
         if tests_passed == total_tests:
-            print("   🎉 ALL TESTS PASSED SUCCESSFULLY 🎉")
+            print("    ALL TESTS PASSED SUCCESSFULLY ")
         else:
-            print("   ❌ Some tests failed - review above")
+            print("    Some tests failed - review above")
 
     except AssertionError as ae:
-        print(f"\n❌ [ASSERTION FAILED]: {ae}")
+        print(f"\n [ASSERTION FAILED]: {ae}")
     except Exception as e:
-        print(f"\n❌ [UNEXPECTED TEST FAILURE]: {e}")
+        print(f"\n [UNEXPECTED TEST FAILURE]: {e}")
 
     print("=" * 80 + "\n")

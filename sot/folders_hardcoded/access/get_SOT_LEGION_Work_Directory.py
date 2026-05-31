@@ -36,19 +36,19 @@ if __name__ == "__main__":
     try:
         # Test 1: Get current directory
         work_dir = get_SOT_LEGION_Work_Directory()
-        print(f"Test 1: Current work directory → ✅ OK")
+        print(f"Test 1: Current work directory   OK")
         print(f"   Path: {work_dir}")
 
         # Test 2: Check if path exists and is writable
         assert os.path.exists(work_dir), f"Path '{work_dir}' does not exist"
         assert os.access(work_dir, os.W_OK), f"No write permission in '{work_dir}'"
-        print("Test 2: Path exists and is writable → ✅ OK")
+        print("Test 2: Path exists and is writable   OK")
 
-        print("\n 🎉 ALL TESTS PASSED SUCCESSFULLY 🎉")
+        print("\n  ALL TESTS PASSED SUCCESSFULLY ")
 
     except AssertionError as ae:
-        print(f"\n❌ [ASSERTION FAILED]: {ae}")
+        print(f"\n [ASSERTION FAILED]: {ae}")
     except Exception as e:
-        print(f"\n❌ [UNEXPECTED TEST FAILURE]: {e}")
+        print(f"\n [UNEXPECTED TEST FAILURE]: {e}")
 
     print("=" * 80 + "\n")

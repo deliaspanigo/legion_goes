@@ -2,13 +2,13 @@ import click
 
 @click.group()
 def cli():
-    """CLI para el procesador de imágenes GOES - MAIE Thesis 2026"""
+    """CLI for the GOES image processor - MAIE Thesis 2026"""
     pass
 
 @cli.command()
 def test():
-    """Comando de prueba"""
-    click.echo("¡Legion GOES está operativo!")
+    """Test command"""
+    click.echo("Legion GOES esta operativo!")
 
 if __name__ == "__main__":
     cli()

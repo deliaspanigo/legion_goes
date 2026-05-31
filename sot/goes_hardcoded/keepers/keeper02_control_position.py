@@ -56,27 +56,27 @@ def control_position(position):
     Extremely strict validation for the Legion GOES system.
    
     Accepts **only** exactly 'east' or 'west' (lowercase, no spaces, exactly 4 characters).
-    Any deviation raises an immediate and explicit error.
+    Any deviation raises an immedayte and explicit error.
     """
     ctx = sys._getframe().f_code.co_name
     if position is None:
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'position' is None. A valid position is required.")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'position' is None. A valid position is required.")
   
     if not isinstance(position, str):
-        raise TypeError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'position' is '{position}' ({type(position).__name__}). Expected type: str.")
+        raise TypeError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'position' is '{position}' ({type(position).__name__}). Expected type: str.")
   
     if " " in position:
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'position' is '{position}' and contains spaces. Provide a clean string (exactly 'east' or 'west').")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'position' is '{position}' and contains spaces. Provide a clean string (exactly 'east' or 'west').")
   
     if position != position.lower():
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'position' is '{position}' and contains uppercase letters. Only lowercase is allowed (exactly 'east' or 'west').")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'position' is '{position}' and contains uppercase letters. Only lowercase is allowed (exactly 'east' or 'west').")
   
     if len(position) != 4:
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'position' is '{position}' and does not have exactly 4 characters (must be exactly 'east' or 'west').")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'position' is '{position}' and does not have exactly 4 characters (must be exactly 'east' or 'west').")
   
     if position not in AVAILABLE_GOES_POSITIONS:
         valid_options = ", ".join(AVAILABLE_GOES_POSITIONS)
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'position' '{position}' is not found in the Source of Truth.\n💡 Available positions: {valid_options}")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'position' '{position}' is not found in the Source of Truth.\n Available positions: {valid_options}")
 
 # ===================================================================
 # UNIT TESTING (Main Execution)
@@ -91,45 +91,45 @@ if __name__ == "__main__":
     try:
         # Test 1: Valid position
         control_position("east")
-        print("Test 1: Valid position 'east' → ✅ OK")
+        print("Test 1: Valid position 'east'   OK")
         tests_passed += 1
 
         # Test 2: Valid alternative
         control_position("west")
-        print("Test 2: Valid position 'west' → ✅ OK")
+        print("Test 2: Valid position 'west'   OK")
         tests_passed += 1
 
         # Test 3: Invalid - None
         try:
             control_position(None)
-            print("Test 3: None input → ❌ FAILED (no error raised)")
+            print("Test 3: None input   FAILED (no error raised)")
         except ValueError as e:
-            print(f"Test 3: None input → ✅ OK (caught expected error): {e}")
+            print(f"Test 3: None input   OK (caught expected error): {e}")
             tests_passed += 1
 
         # Test 4: Invalid - uppercase
         try:
             control_position("East")
-            print("Test 4: Uppercase 'East' → ❌ FAILED (no error)")
+            print("Test 4: Uppercase 'East'   FAILED (no error)")
         except ValueError as e:
-            print(f"Test 4: Uppercase 'East' → ✅ OK (caught expected error): {e}")
+            print(f"Test 4: Uppercase 'East'   OK (caught expected error): {e}")
             tests_passed += 1
 
         # Test 5: Invalid - wrong value
         try:
             control_position("north")
-            print("Test 5: Invalid 'north' → ❌ FAILED (no error)")
+            print("Test 5: Invalid 'north'   FAILED (no error)")
         except ValueError as e:
-            print(f"Test 5: Invalid 'north' → ✅ OK (caught expected error): {e}")
+            print(f"Test 5: Invalid 'north'   OK (caught expected error): {e}")
             tests_passed += 1
 
         print("\n" + f" TESTS SUMMARY: {tests_passed}/{total_tests} PASSED ".center(80, "="))
         if tests_passed == total_tests:
-            print("   🎉 ALL TESTS PASSED SUCCESSFULLY 🎉")
+            print("    ALL TESTS PASSED SUCCESSFULLY ")
         else:
-            print("   ❌ Some tests failed - review above")
+            print("    Some tests failed - review above")
 
     except Exception as e:
-        print(f"\n❌ [UNEXPECTED TEST FAILURE]: {e}")
+        print(f"\n [UNEXPECTED TEST FAILURE]: {e}")
 
     print("=" * 80 + "\n")

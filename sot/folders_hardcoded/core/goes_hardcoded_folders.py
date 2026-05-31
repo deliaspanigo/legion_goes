@@ -57,37 +57,37 @@ if __name__ == "__main__":
     try:
         # Test 1: Check if DEFAULT_FOLDERS is immutable proxy (root level)
         assert isinstance(DEFAULT_FOLDERS, MappingProxyType), "DEFAULT_FOLDERS must be MappingProxyType"
-        print("Test 1: DEFAULT_FOLDERS is immutable proxy → ✅ OK")
+        print("Test 1: DEFAULT_FOLDERS is immutable proxy   OK")
         tests_passed += 1
 
         # Test 2: Check nested structure immutability
         assert isinstance(DEFAULT_FOLDERS["data_proc"], MappingProxyType), "Nested 'data_proc' must be MappingProxyType"
-        print("Test 2: Nested 'data_proc' is immutable → ✅ OK")
+        print("Test 2: Nested 'data_proc' is immutable   OK")
         tests_passed += 1
 
         # Test 3: Check number of top-level keys
         expected_keys = 7
         assert len(DEFAULT_FOLDERS) == expected_keys, f"Expected {expected_keys} top-level folders, got {len(DEFAULT_FOLDERS)}"
-        print(f"Test 3: {len(DEFAULT_FOLDERS)} top-level folders found → ✅ OK")
+        print(f"Test 3: {len(DEFAULT_FOLDERS)} top-level folders found   OK")
         tests_passed += 1
 
         # Test 4: Runtime immutability check (attempt to modify nested)
         try:
             DEFAULT_FOLDERS["data_proc"]["sp01_single"] = "hacked"
-            print("Test 4: Nested modification attempt → ❌ FAILED (no error)")
+            print("Test 4: Nested modification attempt   FAILED (no error)")
         except TypeError:
-            print("Test 4: Nested modification blocked → ✅ OK")
+            print("Test 4: Nested modification blocked   OK")
             tests_passed += 1
 
         print("\n" + f" TESTS SUMMARY: {tests_passed}/{total_tests} PASSED ".center(80, "="))
         if tests_passed == total_tests:
-            print("   🎉 ALL TESTS PASSED SUCCESSFULLY 🎉")
+            print("    ALL TESTS PASSED SUCCESSFULLY ")
         else:
-            print("   ❌ Some tests failed - review above")
+            print("    Some tests failed - review above")
 
     except AssertionError as ae:
-        print(f"\n❌ [ASSERTION FAILED]: {ae}")
+        print(f"\n [ASSERTION FAILED]: {ae}")
     except Exception as e:
-        print(f"\n❌ [UNEXPECTED TEST FAILURE]: {e}")
+        print(f"\n [UNEXPECTED TEST FAILURE]: {e}")
 
     print("=" * 80 + "\n")

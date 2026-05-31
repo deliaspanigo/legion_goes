@@ -47,7 +47,7 @@ def get_SOT_goes_info_product(product_id: str = None) -> MappingProxyType:
         return SAVED_INFO_PROD_GOES[product_id]
     except Exception as e:
         ctx = sys._getframe().f_code.co_name
-        error_msg = f"❌ [FUNCTION ERROR in {ctx}()]: Failed to resolve product '{product_id}'. Details: {e}"
+        error_msg = f" [FUNCTION ERROR in {ctx}()]: Failed to resolve product '{product_id}'. Details: {e}"
         raise type(e)(error_msg) from None
 
 # ===================================================================
@@ -65,48 +65,48 @@ if __name__ == "__main__":
         catalog = get_SOT_goes_info_product()
         assert isinstance(catalog, MappingProxyType), "Catalog must be MappingProxyType"
         assert len(catalog) == 4, f"Expected 4 products, got {len(catalog)}"
-        print("Test 1: Full catalog retrieval → ✅ OK (4 products, immutable)")
+        print("Test 1: Full catalog retrieval   OK (4 products, immutable)")
         tests_passed += 1
 
         # Test 2: Specific product metadata (valid)
         lstf_info = get_SOT_goes_info_product("ABI-L2-LSTF")
         assert lstf_info["type"] == "raster", "ABI-L2-LSTF type mismatch"
         assert lstf_info["cadence_full_disk"] == "1 hour", "ABI-L2-LSTF cadence mismatch"
-        print("Test 2: Specific product 'ABI-L2-LSTF' → ✅ OK")
+        print("Test 2: Specific product 'ABI-L2-LSTF'   OK")
         tests_passed += 1
 
         # Test 3: Vectorial product check (valid)
         glm_info = get_SOT_goes_info_product("GLM-L2-LCFA")
         assert glm_info["type"] == "vectorial", "GLM-L2-LCFA type mismatch"
         assert glm_info["total_files_one_day"] == 4320, "GLM-L2-LCFA files per day mismatch"
-        print("Test 3: Vectorial product 'GLM-L2-LCFA' → ✅ OK")
+        print("Test 3: Vectorial product 'GLM-L2-LCFA'   OK")
         tests_passed += 1
 
         # Test 4: Invalid product ID (should raise)
         try:
             get_SOT_goes_info_product("INVALID-PROD")
-            print("Test 4: Invalid product ID → ❌ FAILED (no error)")
+            print("Test 4: Invalid product ID   FAILED (no error)")
         except Exception as e:
-            print(f"Test 4: Invalid product ID → ✅ OK (caught expected error): {e}")
+            print(f"Test 4: Invalid product ID   OK (caught expected error): {e}")
             tests_passed += 1
 
         # Test 5: Invalid type input (should raise)
         try:
             get_SOT_goes_info_product(123)
-            print("Test 5: Invalid type (int) → ❌ FAILED (no error)")
+            print("Test 5: Invalid type (int)   FAILED (no error)")
         except TypeError as e:
-            print(f"Test 5: Invalid type → ✅ OK (caught expected error): {e}")
+            print(f"Test 5: Invalid type   OK (caught expected error): {e}")
             tests_passed += 1
 
         print("\n" + f" TESTS SUMMARY: {tests_passed}/{total_tests} PASSED ".center(80, "="))
         if tests_passed == total_tests:
-            print("   🎉 ALL TESTS PASSED SUCCESSFULLY 🎉")
+            print("    ALL TESTS PASSED SUCCESSFULLY ")
         else:
-            print("   ❌ Some tests failed - review above")
+            print("    Some tests failed - review above")
 
     except AssertionError as ae:
-        print(f"\n❌ [ASSERTION FAILED]: {ae}")
+        print(f"\n [ASSERTION FAILED]: {ae}")
     except Exception as e:
-        print(f"\n❌ [UNEXPECTED TEST FAILURE]: {e}")
+        print(f"\n [UNEXPECTED TEST FAILURE]: {e}")
 
     print("=" * 80 + "\n")

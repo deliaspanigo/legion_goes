@@ -58,17 +58,17 @@ def control_product_id(product_id: str):
     ctx = sys._getframe().f_code.co_name
 
     if product_id is None:
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'product_id' is None. A valid product_id is required.")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'product_id' is None. A valid product_id is required.")
 
     if not isinstance(product_id, str):
-        raise TypeError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'product_id' must be a string, not {type(product_id).__name__}.")
+        raise TypeError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'product_id' must be a string, not {type(product_id).__name__}.")
 
     if " " in product_id:
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'product_id' '{product_id}' contains spaces. Provide a clean string.")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'product_id' '{product_id}' contains spaces. Provide a clean string.")
 
     if product_id not in AVAILABLE_GOES_PRODUCTS:
         options = ", ".join(AVAILABLE_GOES_PRODUCTS)
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Product '{product_id}' not registered.\nAllowed IDs: {options}")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Product '{product_id}' not registered.\nAllowed IDs: {options}")
 
 # ===================================================================
 # UNIT TESTING (Main Execution)
@@ -83,48 +83,48 @@ if __name__ == "__main__":
     try:
         print("Test 1: Valid product ID")
         control_product_id("ABI-L2-LSTF")
-        print("   ✅ OK: Valid ID passed")
+        print("    OK: Valid ID passed")
         tests_passed += 1
 
         print("\nTest 2: None input")
         try:
             control_product_id(None)
-            print("   ❌ FAILED: should have raised error")
+            print("    FAILED: should have raised error")
         except ValueError as e:
-            print(f"   ✅ OK: Caught expected error:\n      {e}")
+            print(f"    OK: Caught expected error:\n      {e}")
             tests_passed += 1
 
         print("\nTest 3: Invalid type (int)")
         try:
             control_product_id(123)
-            print("   ❌ FAILED: should have raised error")
+            print("    FAILED: should have raised error")
         except TypeError as e:
-            print(f"   ✅ OK: Caught expected error:\n      {e}")
+            print(f"    OK: Caught expected error:\n      {e}")
             tests_passed += 1
 
         print("\nTest 4: With spaces")
         try:
             control_product_id("ABI-L2-LSTF ")
-            print("   ❌ FAILED: should have raised error")
+            print("    FAILED: should have raised error")
         except ValueError as e:
-            print(f"   ✅ OK: Caught expected error:\n      {e}")
+            print(f"    OK: Caught expected error:\n      {e}")
             tests_passed += 1
 
         print("\nTest 5: Invalid product (not registered)")
         try:
             control_product_id("INVALID-PROD")
-            print("   ❌ FAILED: should have raised error")
+            print("    FAILED: should have raised error")
         except ValueError as e:
-            print(f"   ✅ OK: Caught expected error:\n      {e}")
+            print(f"    OK: Caught expected error:\n      {e}")
             tests_passed += 1
 
         print("\n" + f" TESTS SUMMARY: {tests_passed}/{total_tests} PASSED ".center(80, "="))
         if tests_passed == total_tests:
-            print("   🎉 ALL TESTS PASSED SUCCESSFULLY 🎉")
+            print("    ALL TESTS PASSED SUCCESSFULLY ")
         else:
-            print("   ❌ Some tests failed - review above")
+            print("    Some tests failed - review above")
 
     except Exception as e:
-        print(f"\n❌ [UNEXPECTED TEST FAILURE]: {e}")
+        print(f"\n [UNEXPECTED TEST FAILURE]: {e}")
 
     print("=" * 80 + "\n")

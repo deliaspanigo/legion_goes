@@ -50,7 +50,7 @@ def run_proc_GLM_L2_LCFA_fnp01(nc_path, **kwargs):
 
     try:
         # [Step 01] Reading
-        print(f"\n      [Step 01/04] 📂 Reading NetCDF (GOES-{str_sat_num})...", end=" ", flush=True)
+        print(f"\n      [Step 01/04]  Reading NetCDF (GOES-{str_sat_num})...", end=" ", flush=True)
         with nc.Dataset(file_path) as ds:
             qf = ds.variables['flash_quality_flag'][:]
             mask = (qf == 0)
@@ -60,7 +60,7 @@ def run_proc_GLM_L2_LCFA_fnp01(nc_path, **kwargs):
         print(f"Done. ({len(lats)} flashes)")
 
         # [Step 02] GeoJSON
-        print(f"      [Step 02/04] 🛠️  Building GeoJSON...", end=" ", flush=True)
+        print(f"      [Step 02/04]   Building GeoJSON...", end=" ", flush=True)
         features = []
         for lat, lon, en in zip(lats, lons, energies):
             features.append({
@@ -73,7 +73,7 @@ def run_proc_GLM_L2_LCFA_fnp01(nc_path, **kwargs):
         print("Done.")
 
         # [Step 03] Plots
-        print(f"      [Step 03/04] 🎨 Generating Stackable Plots...", end=" ", flush=True)
+        print(f"      [Step 03/04]  Generating Stackable Plots...", end=" ", flush=True)
         
         # 1. GOES VIEW: 5424 x 5424 px
         fig_g = plt.figure(figsize=(18.08, 18.08), facecolor='black')
@@ -86,7 +86,7 @@ def run_proc_GLM_L2_LCFA_fnp01(nc_path, **kwargs):
         if len(lons) > 0:
             ax_g.scatter(lons, lats, c=energies, s=35, cmap='plasma', transform=ccrs.PlateCarree(), zorder=10)
         
-        # ELIMINADO bbox_inches='tight' para mantener resolución exacta
+        # ELIMINADO bbox_inches='tight' para mantener resolucion exacta
         fig_g.savefig(kwargs.get("plot_goes"), dpi=300, facecolor='black')
         plt.close(fig_g)
 
@@ -100,18 +100,18 @@ def run_proc_GLM_L2_LCFA_fnp01(nc_path, **kwargs):
         if len(lons) > 0:
             ax_w.scatter(lons, lats, c=energies, s=25, cmap='plasma', transform=ccrs.PlateCarree(), zorder=10)
             
-        # ELIMINADO bbox_inches='tight' para mantener resolución exacta
+        # ELIMINADO bbox_inches='tight' para mantener resolucion exacta
         fig_w.savefig(kwargs.get("plot_w84"), dpi=100, facecolor='black')
         plt.close(fig_w)
         print("Done.")
 
         # [Step 04] Summary
         duration = round(time.time() - start_time, 2)
-        print(f"      [Step 04/04] 🏁 Finished in {duration}s")
+        print(f"      [Step 04/04]  Finished in {duration}s")
         return True
 
     except Exception as e:
-        print(f"\n      ❌ [ERROR] {str(e)}")
+        print(f"\n       [ERROR] {str(e)}")
         return False
 
 if __name__ == "__main__":
@@ -120,14 +120,14 @@ if __name__ == "__main__":
     nc_candidates = sorted(list(current_dir.glob("*LCFA*.nc")))
 
     if not nc_candidates:
-        print(f"❌ Error: No .nc files found.")
+        print(f" Error: No .nc files found.")
     else:
         target_nc = nc_candidates[0]
         test_out = current_dir / "test_outputs" / target_nc.stem
         test_out.mkdir(parents=True, exist_ok=True)
-        print(f"🎯 TARGET: {target_nc.name}")
+        print(f" TARGET: {target_nc.name}")
         output_paths = {k: str(test_out / v) for k, v in gen_dict_output_file_name(str(target_nc)).items()}
 
         if run_proc_GLM_L2_LCFA_fnp01(str(target_nc), **output_paths):
-            print("-" * 80 + f"\n✅ SUCCESS. WGS84 is exactly 3600x1800. Results in: {test_out}")
+            print("-" * 80 + f"\n SUCCESS. WGS84 is exactly 3600x1800. Results in: {test_out}")
     print("=" * 80 + "\n")

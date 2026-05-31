@@ -7,7 +7,7 @@ import satpy
 from pathlib import Path
 import os
 
-# 1. Rutas absolutas basadas en la ubicación del archivo (satpy_config/)
+# 1. Absolute paths based on the file location (satpy_config/)
 BASE_DIR = Path(__file__).resolve().parent
 PROJ_DIR = BASE_DIR.parent  # Sube a legion_goes/
 CACHE_DIR = PROJ_DIR / "satpy_cache"
@@ -15,18 +15,18 @@ CACHE_DIR = PROJ_DIR / "satpy_cache"
 # Crea el cache si no existe
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
-# 2. Configuración recomendada (lista obligatoria)
+# 2. Recommended configuration (required list)
 satpy.config.set(
     config_path=[str(BASE_DIR)],  # Lista, incluye tus composites y enhancements
     cache_dir=str(CACHE_DIR),
-    log_level="ERROR",  # Más limpio que WARNING
+    log_level="ERROR",  # Cleaner than WARNING
     default_resampler="kd_tree"
 )
 
 # 3. Variable de entorno para Pyresample
 os.environ['PYRESAMPLE_CACHE_DIR'] = str(CACHE_DIR)
 
-# 4. Mensaje de auditoría (para tu tesis y debug)
+# 4. Audit message (for thesis work and debugging)
 print("--- SatPy Configuration Loaded (Legion GOES v0.3.1) ---")
 print(f"  Cache directory: {CACHE_DIR}")
 print(f"  Config paths added: {BASE_DIR}")

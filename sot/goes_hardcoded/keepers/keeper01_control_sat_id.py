@@ -54,27 +54,27 @@ def control_sat_id(sat_id):
     Extremely strict validation for the Legion GOES system.
    
     Accepts **only** exactly '16', '17', '18' or '19' (exactly 2 digits, no spaces, only numeric).
-    Any deviation raises an immediate and explicit error.
+    Any deviation raises an immedayte and explicit error.
     """
     ctx = sys._getframe().f_code.co_name
     if sat_id is None:
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'sat_id' is None. A valid satellite ID is required.")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'sat_id' is None. A valid satellite ID is required.")
    
     if not isinstance(sat_id, str):
-        raise TypeError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'sat_id' is '{sat_id}' ({type(sat_id).__name__}). Expected type: str.")
+        raise TypeError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'sat_id' is '{sat_id}' ({type(sat_id).__name__}). Expected type: str.")
    
     if " " in sat_id:
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'sat_id' is '{sat_id}' and contains spaces. Provide a clean string (exactly '16', '17', '18' or '19').")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'sat_id' is '{sat_id}' and contains spaces. Provide a clean string (exactly '16', '17', '18' or '19').")
    
     if len(sat_id) != 2:
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'sat_id' is '{sat_id}' and does not have exactly 2 characters (must be exactly '16', '17', '18' or '19').")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'sat_id' is '{sat_id}' and does not have exactly 2 characters (must be exactly '16', '17', '18' or '19').")
    
     if not sat_id.isdigit():
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'sat_id' is '{sat_id}' and contains non-digit characters. Expected exactly 2 digits (e.g., '19').")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'sat_id' is '{sat_id}' and contains non-digit characters. Expected exactly 2 digits (e.g., '19').")
    
     if sat_id not in AVAILABLE_GOES_ID:
         valid_options = ", ".join(AVAILABLE_GOES_ID)
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'sat_id' '{sat_id}' is not found in the Source of Truth.\n💡 Available satellite IDs: {valid_options}")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'sat_id' '{sat_id}' is not found in the Source of Truth.\n Available satellite IDs: {valid_options}")
 
 # ===================================================================
 # UNIT TESTING (Main Execution)
@@ -89,45 +89,45 @@ if __name__ == "__main__":
     try:
         # Test 1: Valid sat_id
         control_sat_id("19")
-        print("Test 1: Valid sat_id '19' → ✅ OK")
+        print("Test 1: Valid sat_id '19'   OK")
         tests_passed += 1
 
         # Test 2: Valid edge case
         control_sat_id("16")
-        print("Test 2: Valid sat_id '16' → ✅ OK")
+        print("Test 2: Valid sat_id '16'   OK")
         tests_passed += 1
 
         # Test 3: Invalid - None
         try:
             control_sat_id(None)
-            print("Test 3: None input → ❌ FAILED (no error raised)")
+            print("Test 3: None input   FAILED (no error raised)")
         except ValueError as e:
-            print(f"Test 3: None input → ✅ OK (caught expected error): {e}")
+            print(f"Test 3: None input   OK (caught expected error): {e}")
             tests_passed += 1
 
         # Test 4: Invalid type (int)
         try:
             control_sat_id(19)
-            print("Test 4: Invalid type (int) → ❌ FAILED (no error)")
+            print("Test 4: Invalid type (int)   FAILED (no error)")
         except TypeError as e:
-            print(f"Test 4: Invalid type (int) → ✅ OK (caught expected error): {e}")
+            print(f"Test 4: Invalid type (int)   OK (caught expected error): {e}")
             tests_passed += 1
 
         # Test 5: Invalid sat_id (not registered)
         try:
             control_sat_id("20")
-            print("Test 5: Invalid sat_id '20' → ❌ FAILED (no error)")
+            print("Test 5: Invalid sat_id '20'   FAILED (no error)")
         except ValueError as e:
-            print(f"Test 5: Invalid sat_id '20' → ✅ OK (caught expected error): {e}")
+            print(f"Test 5: Invalid sat_id '20'   OK (caught expected error): {e}")
             tests_passed += 1
 
         print("\n" + f" TESTS SUMMARY: {tests_passed}/{total_tests} PASSED ".center(80, "="))
         if tests_passed == total_tests:
-            print("   🎉 ALL TESTS PASSED SUCCESSFULLY 🎉")
+            print("    ALL TESTS PASSED SUCCESSFULLY ")
         else:
-            print("   ❌ Some tests failed - review above")
+            print("    Some tests failed - review above")
 
     except Exception as e:
-        print(f"\n❌ [UNEXPECTED TEST FAILURE]: {e}")
+        print(f"\n [UNEXPECTED TEST FAILURE]: {e}")
 
     print("=" * 80 + "\n")

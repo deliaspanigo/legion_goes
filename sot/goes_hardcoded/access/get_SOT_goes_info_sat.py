@@ -54,19 +54,19 @@ def get_SOT_goes_info_sat(sat_id: str = None) -> MappingProxyType:
     """
     ctx = sys._getframe().f_code.co_name
     if not hasattr(sys.modules[__name__], 'SAVED_INFO_SAT_GOES'):
-        raise RuntimeError(f"\n❌ [🛡️🛡️🛡️ SYSTEM INTEGRITY ERROR - {ctx}()]: The master object 'SAVED_INFO_SAT_GOES' does not exist in module namespace. Source of Truth initialization failed.")
+        raise RuntimeError(f"\n [ SYSTEM INTEGRITY ERROR - {ctx}()]: The master object 'SAVED_INFO_SAT_GOES' does not exist in module namespace. Source of Truth initialization failed.")
    
     master_obj = SAVED_INFO_SAT_GOES
    
     if master_obj is None:
-        raise RuntimeError(f"\n❌ [🛡️🛡️🛡️ SYSTEM INTEGRITY ERROR - {ctx}()]: The master object 'SAVED_INFO_SAT_GOES' is None. Source of Truth is not initialized.")
+        raise RuntimeError(f"\n [ SYSTEM INTEGRITY ERROR - {ctx}()]: The master object 'SAVED_INFO_SAT_GOES' is None. Source of Truth is not initialized.")
    
     from types import MappingProxyType
     if not isinstance(master_obj, MappingProxyType):
-        raise RuntimeError(f"\n❌ [🛡️🛡️🛡️ SYSTEM INTEGRITY ERROR - {ctx}()]: The master object 'SAVED_INFO_SAT_GOES' is of type {type(master_obj).__name__}, but MUST be exactly MappingProxyType (immutable proxy). Source of Truth integrity violated - possible code tampering, import error, or concurrent modification.")
+        raise RuntimeError(f"\n [ SYSTEM INTEGRITY ERROR - {ctx}()]: The master object 'SAVED_INFO_SAT_GOES' is of type {type(master_obj).__name__}, but MUST be exactly MappingProxyType (immutable proxy). Source of Truth integrity violated - possible code tampering, import error, or concurrent modification.")
    
     if not master_obj:
-        raise RuntimeError(f"\n❌ [🛡️🛡️🛡️ SYSTEM INTEGRITY ERROR - {ctx}()]: The master object 'SAVED_INFO_SAT_GOES' is empty. Source of Truth has no satellite data.")
+        raise RuntimeError(f"\n [ SYSTEM INTEGRITY ERROR - {ctx}()]: The master object 'SAVED_INFO_SAT_GOES' is empty. Source of Truth has no satellite data.")
    
     if sat_id is None:
         return master_obj
@@ -74,7 +74,7 @@ def get_SOT_goes_info_sat(sat_id: str = None) -> MappingProxyType:
     try:
         control_sat_id(sat_id)
     except Exception as e:
-        error_msg = f"❌ [FUNCTION ERROR in {ctx}()]: Failed to resolve satellite ID. Details from guard: {e}"
+        error_msg = f" [FUNCTION ERROR in {ctx}()]: Failed to resolve satellite ID. Details from guard: {e}"
         raise type(e)(error_msg) from None
    
     return master_obj[sat_id]
@@ -94,41 +94,41 @@ if __name__ == "__main__":
         all_sats = get_SOT_goes_info_sat()
         assert isinstance(all_sats, MappingProxyType), "Full SoT must be MappingProxyType"
         assert len(all_sats) == 4, f"Expected 4 satellites, got {len(all_sats)}"
-        print("Test 1: Full catalog retrieval → ✅ OK (4 satellites, immutable)")
+        print("Test 1: Full catalog retrieval   OK (4 satellites, immutable)")
         tests_passed += 1
 
         # Test 2: Specific satellite metadata (valid)
         g19_meta = get_SOT_goes_info_sat("19")
         assert g19_meta["bucket"] == "noaa-goes19", "GOES-19 bucket mismatch"
         assert g19_meta["position"] == "east", "GOES-19 position mismatch"
-        print("Test 2: Specific satellite metadata ('19') → ✅ OK")
+        print("Test 2: Specific satellite metadata ('19')   OK")
         tests_passed += 1
 
         # Test 3: Invalid sat_id (should raise)
         try:
             get_SOT_goes_info_sat("20")
-            print("Test 3: Invalid sat_id '20' → ❌ FAILED (no error)")
+            print("Test 3: Invalid sat_id '20'   FAILED (no error)")
         except Exception as e:
-            print(f"Test 3: Invalid sat_id '20' → ✅ OK (caught expected error): {e}")
+            print(f"Test 3: Invalid sat_id '20'   OK (caught expected error): {e}")
             tests_passed += 1
 
         # Test 4: Invalid type input (should raise)
         try:
             get_SOT_goes_info_sat(123)
-            print("Test 4: Invalid type (int) → ❌ FAILED (no error)")
+            print("Test 4: Invalid type (int)   FAILED (no error)")
         except TypeError as e:
-            print(f"Test 4: Invalid type → ✅ OK (caught expected error): {e}")
+            print(f"Test 4: Invalid type   OK (caught expected error): {e}")
             tests_passed += 1
 
         print("\n" + f" TESTS SUMMARY: {tests_passed}/{total_tests} PASSED ".center(80, "="))
         if tests_passed == total_tests:
-            print("   🎉 ALL TESTS PASSED SUCCESSFULLY 🎉")
+            print("    ALL TESTS PASSED SUCCESSFULLY ")
         else:
-            print("   ❌ Some tests failed - review above")
+            print("    Some tests failed - review above")
 
     except AssertionError as ae:
-        print(f"\n❌ [ASSERTION FAILED]: {ae}")
+        print(f"\n [ASSERTION FAILED]: {ae}")
     except Exception as e:
-        print(f"\n❌ [UNEXPECTED TEST FAILURE]: {e}")
+        print(f"\n [UNEXPECTED TEST FAILURE]: {e}")
 
     print("=" * 80 + "\n")

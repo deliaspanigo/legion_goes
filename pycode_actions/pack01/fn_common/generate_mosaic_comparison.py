@@ -10,30 +10,30 @@ from pathlib import Path
 def generate_mosaic_comparison(dict_paths):
     """
     Genera un mosaico vertical de los PNGs en el diccionario.
-    El nombre del archivo está hardcodeado: 'MOSAIC_comparison.png'
-    Se guarda en la misma carpeta que el primer PNG del diccionario.
+    El nombre del file esta hardcodeado: 'MOSAIC_comparison.png'
+    Se guarda en la misma folder que el primer PNG del diccionario.
     """
-    # 1. Nombre hardcodeado del producto final
+    # 1. Name hardcodeado del producto final
     MOSAIC_NAME = "MOSAIC_comparison.png"
 
-    # 2. Extraer paths que son PNG y existen físicamente
+    # 2. Extraer paths que son PNG y existen fisicamente
     png_files = []
     for val in dict_paths.values():
         p = Path(val)
         if p.suffix.lower() == '.png' and p.exists():
-            # Evitar que el propio mosaico se incluya si se re-ejecuta el script
+            # Evitar que el propio mosaico se incluya si se re-runs el script
             if p.name != MOSAIC_NAME:
                 png_files.append(p)
     
     if not png_files:
-        print("⚠️ No se encontraron archivos PNG válidos para el mosaico.")
+        print(" No se encontraron files PNG validos para el mosaico.")
         return
 
-    # 3. Definir ruta de salida (Carpeta del primer PNG + nombre hardcodeado)
+    # 3. Define output path (first PNG folder + hardcoded name)
     output_dir = png_files[0].parent
     output_path = output_dir / MOSAIC_NAME
 
-    # 4. Verificación de existencia (No generar si ya existe)
+    # 4. Verificacion de existencia (No generar si ya existe)
     if output_path.exists():
         print(f"  [SKIPPED] El mosaico ya existe: {output_path.name}")
         return
@@ -54,26 +54,26 @@ def generate_mosaic_comparison(dict_paths):
         try:
             img = Image.open(img_path)
             ax.imshow(img)
-            # Título con el nombre del archivo original
+            # Titulo con el nombre del file original
             ax.set_title(f"FILE: {img_path.name}", fontsize=14, fontweight='bold', pad=15)
             ax.axis('off')
         except Exception as e:
             ax.text(0.5, 0.5, f"Error: {img_path.name}\n{e}", ha='center', va='center')
             ax.axis('off')
 
-    # 7. Guardado final y liberación de memoria
+    # 7. Guardado final y liberacion de memoria
     plt.tight_layout()
     try:
         fig.savefig(output_path, dpi=150, bbox_inches='tight')
-        print(f"  ✅ Mosaico guardado con éxito: {output_path.name}")
+        print(f"   Mosaico guardado con exito: {output_path.name}")
     except Exception as e:
-        print(f"  ❌ Error al guardar el mosaico: {e}")
+        print(f"   Error al guardar el mosaico: {e}")
     finally:
         plt.close(fig) # Vital para no agotar la RAM en procesos masivos
 
-# --- Ejemplo de ejecución ---
+# --- Ejemplo de ejecucion ---
 if __name__ == "__main__":
-    # La función detectará que debe guardar en 'data_proc/sp01/test/'
+    # The function detects that it should save under 'data_proc/sp01/test/'
     mis_outputs = {
         "img_native": "data_proc/sp01/test/G19_FixedGrid_Celsius.png",
         "img_wgs84": "data_proc/sp01/test/G19_WGS84_Celsius.png",

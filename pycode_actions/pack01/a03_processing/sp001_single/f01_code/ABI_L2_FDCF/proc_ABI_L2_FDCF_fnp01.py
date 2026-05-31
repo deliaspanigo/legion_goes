@@ -72,13 +72,13 @@ def run_proc_ABI_L2_FDCF_fnp01(nc_path, **kwargs):
     path_cache = CACHE_DIR
     resample_kwargs = {
         'cache_dir': str(path_cache),
-        'nprocs': 4,              # Usa más núcleos para el cálculo inicial
-        'static_data': True       # Fuerza a tratar la geometría como fija
+        'nprocs': 4,              # Usa ms ncleos para el clculo inicial
+        'static_data': True       # Fuerza a tratar la geometra como fija
     }
     my_chunks = {'y': 1024, 'x': 1024}
 
     try:
-        # 0. Setup carpeta de salida y Area WGS84
+        # 0. Set up output folder and WGS84 area
         first_path = list(kwargs.values())[0]
         Path(first_path).parent.mkdir(parents=True, exist_ok=True)
         
@@ -90,7 +90,7 @@ def run_proc_ABI_L2_FDCF_fnp01(nc_path, **kwargs):
         
         
         # --- BLOQUE INDEPENDIENTE: COLOR 01 ---
-        print(f"\n      [Step 01/03] 🛰️  Processing Color 01 (my_fdc_fn01)...", flush=True)
+        print(f"\n      [Step 01/05]   Processing Color 01 (my_fdc_fn01)...", flush=True)
         prod_01 = 'my_fdc_fn01'
         scn.load([prod_01])
         
@@ -110,7 +110,7 @@ def run_proc_ABI_L2_FDCF_fnp01(nc_path, **kwargs):
         print("      Done and Cleared.")
 
         # --- BLOQUE INDEPENDIENTE: COLOR 02 ---
-        print(f"      [Step 02/03] 🛰️  Processing Color 02 (my_fdc_fn02)...", flush=True)
+        print(f"      [Step 02/05]   Processing Color 02 (my_fdc_fn02)...", flush=True)
         prod_02 = 'my_fdc_fn02'
         scn.load([prod_02])
         
@@ -128,7 +128,7 @@ def run_proc_ABI_L2_FDCF_fnp01(nc_path, **kwargs):
         print("      Done and Cleared.")
 
         # --- BLOQUE INDEPENDIENTE: COLOR 03 ---
-        print(f"      [Step 03/03] 🛰️  Processing Color 03 (my_fdc_fn03)...", flush=True)
+        print(f"      [Step 03/05]   Processing Color 03 (my_fdc_fn03)...", flush=True)
         prod_03 = 'my_fdc_fn03'
         scn.load([prod_03])
         
@@ -145,7 +145,7 @@ def run_proc_ABI_L2_FDCF_fnp01(nc_path, **kwargs):
         print("      Done and Cleared.")
 
         # --- BLOQUE INDEPENDIENTE: COLOR 04 ---
-        print(f"      [Step 03/03] 🛰️  Processing Color 03 (my_fdc_fn04)...", flush=True)
+        print(f"      [Step 04/05]   Processing Color 04 (my_fdc_fn04)...", flush=True)
         prod_04 = 'my_fdc_fn04'
         scn.load([prod_04])
         
@@ -162,11 +162,11 @@ def run_proc_ABI_L2_FDCF_fnp01(nc_path, **kwargs):
         print("      Done and Cleared.")
         
         # --- BLOQUE INDEPENDIENTE: COLOR 05 ---
-        print(f"      [Step 03/03] 🛰️  Processing Color 03 (my_fdc_fn05)...", flush=True)
-        prod_04 = 'my_fdc_fn05'
+        print(f"      [Step 05/05]   Processing Color 05 (my_fdc_fn05)...", flush=True)
+        prod_05 = 'my_fdc_fn05'
         scn.load([prod_05])
         
-        scn.save_dataset(prod_05, filename=kwargs.get("goes_native_color04_png"), writer='simple_image')
+        scn.save_dataset(prod_05, filename=kwargs.get("goes_native_color05_png"), writer='simple_image')
         
         ######scn_res_05 = scn.resample(area_def, resampler='kd_tree', cache_dir=str(path_cache))
         scn_res_05 = scn.resample(area_def, resampler='kd_tree', **resample_kwargs)
@@ -178,56 +178,56 @@ def run_proc_ABI_L2_FDCF_fnp01(nc_path, **kwargs):
         gc.collect()
         print("      Done and Cleared.")
         
-        # --- FINALIZACIÓN ---
+        # --- FINALIZACIN ---
         duration = round(time.time() - start_time, 2)
         print(f"\n      [Summary] Total time: {duration}s | Status: Success")
         return True
 
     except Exception as e:
-        print(f"\n      ❌ [FNP01 ERROR] {str(e)}")
+        print(f"\n       [FNP01 ERROR] {str(e)}")
         return False
         
 # =============================================================================
 # 3. DIAGNOSTIC MAIN (Local testing)
 # =============================================================================
 if __name__ == "__main__":
-    # Intentar cargar configuración global de Satpy
+    # Intentar cargar configuracin global de Satpy
     try:
         from legion_goes.satpy_config import my_config_satpy
-        print("✅ Global Satpy Config loaded.")
+        print(" Global Satpy Config loaded.")
     except ImportError:
-        print("⚠️  Global config not found. Using defaults.")
+        print("  Global config not found. Using defaults.")
 
     print("\n" + " ABI L2 FDCF: LINEAR PROCESSING ".center(80, "="))
     
-    # Rutas de prueba
+    # Test paths
     working_dir = Path.cwd() 
     test_dir = working_dir / "test_one_image"
     nc_candidates = sorted(list(test_dir.glob("*FDCF*.nc")))
 
     if not nc_candidates:
-        print(f"❌ Error: No .nc files found in {test_dir}")
+        print(f" Error: No .nc files found in {test_dir}")
     else:
         target_nc = nc_candidates[0]
         output_base = test_dir / "test_outputs" / target_nc.stem
         output_base.mkdir(parents=True, exist_ok=True)
 
-        print(f"🎯 INPUT : {target_nc.name}")
-        print(f"📂 OUTPUT: {output_base}")
+        print(f" INPUT : {target_nc.name}")
+        print(f" OUTPUT: {output_base}")
         print("-" * 80)
 
-        # Generar nombres y rutas completas
+        # Generate names and full paths
         dict_names = gen_dict_output_file_name(nc_path=str(target_nc))
         dict_paths = {k: str(output_base / v) for k, v in dict_names.items()}
 
-        # Ejecución
+        # Ejecucin
         success = run_proc_ABI_L2_FDCF_fnp01(nc_path=str(target_nc), **dict_paths)
 
         if success:
             print("-" * 80)
-            print(f"✅ PROCESS COMPLETED SUCCESSFULLY")
+            print(f" PROCESS COMPLETED SUCCESSFULLY")
         else:
             print("-" * 80)
-            print(f"❌ PROCESS FAILED.")
+            print(f" PROCESS FAILED.")
 
     print("=" * 80 + "\n")

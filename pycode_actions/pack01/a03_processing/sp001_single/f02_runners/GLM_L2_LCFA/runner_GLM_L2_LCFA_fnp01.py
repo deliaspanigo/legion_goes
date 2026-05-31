@@ -157,10 +157,10 @@ if __name__ == "__main__":
     nc_candidates = sorted(list(working_dir.glob("*LCFA*.nc")))
 
     if not nc_candidates:
-        print(f"❌ Error: No .nc files with 'LCFA' found in: {working_dir}")
+        print(f" Error: No .nc files with 'LCFA' found in: {working_dir}")
     else:
         target_nc = nc_candidates[0]
         
         # Start runner
         run_runner_GLM_L2_LCFA_fnp01(nc_path=target_nc, overwrite = True)
-        print("-" * 80 + "\n✅ TEST COMPLETED\n" + "=" * 80)
+        print("-" * 80 + "\n TEST COMPLETED\n" + "=" * 80)

@@ -74,7 +74,7 @@ def get_colored_output(text: str, is_alt: bool = False) -> str:
 # =============================================================================
 
 def show_welcome_banner(use_alt: bool = False):
-    """Displays the colored welcome banner and detailed system diagnostics."""
+    """Displays the colored welcome banner and detailed system daygnostics."""
     # 1. Tiempos
     now_local = datetime.now()
     now_utc = datetime.now(timezone.utc)
@@ -97,7 +97,7 @@ def show_welcome_banner(use_alt: bool = False):
     print(get_colored_output(raw_art, is_alt=use_alt))
     print("="*95)
     
-    # --- DASHBOARD TÉCNICO ---
+    # --- DASHBOARD TECNICO ---
     print(f"  {C_BLD}SYSTEM DATE:{C_RST}           {now_local.strftime('%Y-%m-%d %H:%M:%S')} (Local)")
     print(f"  {C_BLD}UTC SYSTEM DATE:{C_RST}       {now_utc.strftime('%Y-%m-%d %H:%M:%S')} (UTC)")
     print(f"  {C_BLD}OPERATING SYSTEM:{C_RST}      {platform.system()} {platform.release()} ({platform.machine()})")

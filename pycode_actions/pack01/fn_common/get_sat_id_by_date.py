@@ -16,7 +16,7 @@ from pathlib import Path
 from datetime import datetime
 
 # =============================================================================
-# CEREBRO DE SELECCIÓN DE SATÉLITE
+# CEREBRO DE SELECCION DE SATELITE
 # =============================================================================
 
 def get_sat_id_by_date(position: str, year: str, day: str) -> str:
@@ -32,7 +32,7 @@ def get_sat_id_by_date(position: str, year: str, day: str) -> str:
         
     elif pos == "WEST":
         # El 18 es el actual titular del oeste. 
-        # El 17 ya quedó como reserva/backup.
+        # El 17 ya quedo como reserva/backup.
         if date_query >= datetime(2023, 1, 1):
             return "18"
         else:
@@ -43,5 +43,5 @@ if __name__ == "__main__":
     # Test correcto (todos strings)
     sat_number = get_sat_id_by_date(position="EAST", year="2026", day="003")
     print(f"Resultado del Test: {sat_number}")
-    # Esto lanzaría un TypeError por culpa del 2026 (int):
+    # Esto lanzaria un TypeError por culpa del 2026 (int):
     # run_action02_download_files("19", "ABI-L2-LSTF", 2026, "003", "ALL")

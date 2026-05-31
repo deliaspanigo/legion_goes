@@ -92,13 +92,13 @@ if __name__ == "__main__":
                 integrity_errors.append(f"Redundant root detected in {key}: {path_str}")
         
         if not integrity_errors:
-            print("✅ [SUCCESS]: All paths are correctly resolved and non-redundant.")
+            print(" [SUCCESS]: All paths are correctly resolved and non-redundant.")
         else:
-            print("❌ [FAILURE]: Path resolution leaks detected:")
+            print(" [FAILURE]: Path resolution leaks detected:")
             for error in integrity_errors:
                 print(f"   ! {error}")
 
     except Exception as e:
-        print(f"❌ [CRITICAL ERROR] Test failed: {e}")
+        print(f" [CRITICAL ERROR] Test failed: {e}")
         
     print("\n" + "=" * 80 + "\n")

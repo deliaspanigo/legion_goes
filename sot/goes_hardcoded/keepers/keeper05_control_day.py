@@ -46,23 +46,23 @@ def control_day(day):
     ctx = sys._getframe().f_code.co_name
 
     if day is None:
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'day' is None. A valid Julian day is required.")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'day' is None. A valid Julian day is required.")
 
     if not isinstance(day, str):
-        raise TypeError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'day' is '{day}' ({type(day).__name__}). Expected string of exactly 3 digits (e.g., '065').")
+        raise TypeError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'day' is '{day}' ({type(day).__name__}). Expected string of exactly 3 digits (e.g., '065').")
 
     if " " in day:
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'day' '{day}' contains spaces. Provide a clean 3-digit string (e.g., '065').")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'day' '{day}' contains spaces. Provide a clean 3-digit string (e.g., '065').")
 
     if len(day) != 3:
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'day' '{day}' does not have exactly 3 characters. Expected format: 'DDD' (e.g., '001' or '366').")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'day' '{day}' does not have exactly 3 characters. Expected format: 'DDD' (e.g., '001' or '366').")
 
     if not day.isdigit():
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'day' '{day}' contains non-digit characters. Expected exactly 3 digits.")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'day' '{day}' contains non-digit characters. Expected exactly 3 digits.")
 
     int_day = int(day)
     if not (1 <= int_day <= 366):
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Day '{day}' ({int_day}) is out of valid Julian day range. Must be between 001 and 366.")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Day '{day}' ({int_day}) is out of valid Julian day range. Must be between 001 and 366.")
 
 # ===================================================================
 # UNIT TESTING (Main Execution)
@@ -77,50 +77,50 @@ if __name__ == "__main__":
     try:
         # Test 1: Valid Julian day (string 3 digits)
         control_day("065")
-        print("Test 1: Valid day '065' → ✅ OK")
+        print("Test 1: Valid day '065'   OK")
         tests_passed += 1
 
         # Test 2: Valid edge case (min)
         control_day("001")
-        print("Test 2: Valid day '001' → ✅ OK")
+        print("Test 2: Valid day '001'   OK")
         tests_passed += 1
 
         # Test 3: Valid edge case (max)
         control_day("366")
-        print("Test 3: Valid day '366' → ✅ OK")
+        print("Test 3: Valid day '366'   OK")
         tests_passed += 1
 
         # Test 4: Invalid - None
         try:
             control_day(None)
-            print("Test 4: None input → ❌ FAILED (no error raised)")
+            print("Test 4: None input   FAILED (no error raised)")
         except ValueError as e:
-            print(f"Test 4: None input → ✅ OK (caught expected error): {e}")
+            print(f"Test 4: None input   OK (caught expected error): {e}")
             tests_passed += 1
 
         # Test 5: Invalid - wrong length
         try:
             control_day("65")
-            print("Test 5: Wrong length '65' → ❌ FAILED (no error)")
+            print("Test 5: Wrong length '65'   FAILED (no error)")
         except ValueError as e:
-            print(f"Test 5: Wrong length '65' → ✅ OK (caught expected error): {e}")
+            print(f"Test 5: Wrong length '65'   OK (caught expected error): {e}")
             tests_passed += 1
 
         # Test 6: Invalid - out of range
         try:
             control_day("367")
-            print("Test 6: Out of range '367' → ❌ FAILED (no error)")
+            print("Test 6: Out of range '367'   FAILED (no error)")
         except ValueError as e:
-            print(f"Test 6: Out of range '367' → ✅ OK (caught expected error): {e}")
+            print(f"Test 6: Out of range '367'   OK (caught expected error): {e}")
             tests_passed += 1
 
         print("\n" + f" TESTS SUMMARY: {tests_passed}/{total_tests} PASSED ".center(80, "="))
         if tests_passed == total_tests:
-            print("   🎉 ALL TESTS PASSED SUCCESSFULLY 🎉")
+            print("    ALL TESTS PASSED SUCCESSFULLY ")
         else:
-            print("   ❌ Some tests failed - review above")
+            print("    Some tests failed - review above")
 
     except Exception as e:
-        print(f"\n❌ [UNEXPECTED TEST FAILURE]: {e}")
+        print(f"\n [UNEXPECTED TEST FAILURE]: {e}")
 
     print("=" * 80 + "\n")

@@ -5,25 +5,25 @@
 
 import os
 import traceback
-# Importaciones ABSOLUTAS (más seguras)
+# Importaciones ABSOLUTAS (mas seguras)
 from legion_goes.pycode_actions.pack01.a01_init.action01_init import run_action01_init
 from legion_goes.pycode_actions.pack01.a02_download_files.action02_download_files import run_action02_download_files
 
 def run_pack01_01_download(position: str, year: str, day: str, hour: str):
     """
-    Ejecuta el flujo completo del Pack 01:
-    - Inicialización de carpetas y bienvenida (Task 01)
-    - Descarga automatizada de archivos según fecha y posición (Task 02)
+    Runs the complete Pack 01 workflow:
+    - Folder initialization and welcome step (Task 01)
+    - Automated file download by date and position (Task 02)
     """
-    # 1. Inicialización
+    # 1. Initialization
     run_action01_init(verbose=True)
     
-    # 2. Descarga de productos específicos
-    # Nota: Asegúrate de que los IDs coincidan con las carpetas (guion medio/bajo)
+    # 2. Download of specific products
+    # Nota: Make sure the IDs match the folders (hyphen/underscore)
     products = ["ABI-L2-LSTF", "ABI-L2-MCMIPF", "ABI-L2-FDCF", "GLM-L2-LCFA"]
     
     for prod in products:
-        print(f"--- Iniciando descarga de: {prod} ---")
+        print(f"--- Starting download for: {prod} ---")
         run_action02_download_files(
             position=position, 
             product=prod, 
@@ -33,26 +33,26 @@ def run_pack01_01_download(position: str, year: str, day: str, hour: str):
         )
 
 # ===================================================================
-# MAIN EXECUTION (Panel de Control dinámico)
+# MAIN EXECUTION (Panel de Control dinamico)
 # ===================================================================
 if __name__ == "__main__":
     print("\n" + "=== LEGION GOES - PACK 01: FULL PROCESS ===".center(80, "="))
     
-    # 1. CAPTURA DE PARÁMETROS DEL SISTEMA (Configurados en el .sh)
+    # 1. CAPTURA DE PARAMETROS DEL SISTEMA (Configurados en el .sh)
     # os.getenv("NOMBRE", "VALOR_POR_DEFECTO")
     ENV_POS  = os.getenv("POS", "WEST")
     ENV_YEAR = os.getenv("YEAR", "2026")
     ENV_DAY  = os.getenv("DAY", "003")
     ENV_HOUR = os.getenv("HOUR", "ALL")
 
-    # Mostrar qué estamos por procesar para confirmación visual
-    print(f"📍 Posición: {ENV_POS}")
-    print(f"📅 Fecha:    {ENV_YEAR}-{ENV_DAY}")
-    print(f"🕒 Hora:     {ENV_HOUR}")
+    # Show what will be processed for visual confirmation
+    print(f" Posicion: {ENV_POS}")
+    print(f" Fecha:    {ENV_YEAR}-{ENV_DAY}")
+    print(f" Hora:     {ENV_HOUR}")
     print("-" * 80)
 
     try:
-        # 2. EJECUCIÓN USANDO LAS VARIABLES CAPTURADAS
+        # 2. EJECUCION USANDO LAS VARIABLES CAPTURADAS
         run_pack01_01_download(
             position = ENV_POS, 
             year     = ENV_YEAR, 
@@ -64,8 +64,8 @@ if __name__ == "__main__":
         print(f"Carpeta de trabajo: {os.getcwd()}")
 
     except Exception as e:
-        print("\n" + "=== ERROR CRÍTICO EN PACK 01 ===".center(80, "="))
-        print(f"Ocurrió un error: {e}")
+        print("\n" + "=== ERROR CRITICO EN PACK 01 ===".center(80, "="))
+        print(f"An error occurred: {e}")
         traceback.print_exc()
         
     print("=" * 80 + "\n")

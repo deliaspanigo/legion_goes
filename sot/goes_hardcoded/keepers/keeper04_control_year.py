@@ -41,24 +41,24 @@ def control_year(year):
     Extremely strict validation.
     
     Accepts **only** exactly 4-digit strings like '2026' (no spaces, only digits).
-    Any deviation raises an immediate and explicit error.
+    Any deviation raises an immedayte and explicit error.
     """
     ctx = sys._getframe().f_code.co_name
 
     if year is None:
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'year' is None. A valid year is required.")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'year' is None. A valid year is required.")
     
     if not isinstance(year, str):
-        raise TypeError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'year' is '{year}' ({type(year).__name__}). Expected type: str.")
+        raise TypeError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'year' is '{year}' ({type(year).__name__}). Expected type: str.")
     
     if " " in year:
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'year' '{year}' contains spaces. Provide a clean 4-digit string (exactly 'YYYY').")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'year' '{year}' contains spaces. Provide a clean 4-digit string (exactly 'YYYY').")
     
     if len(year) != 4:
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'year' '{year}' does not have exactly 4 characters. Expected format: 'YYYY' (e.g., '2026').")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'year' '{year}' does not have exactly 4 characters. Expected format: 'YYYY' (e.g., '2026').")
     
     if not year.isdigit():
-        raise ValueError(f"\n❌ [🛡️🛡️🛡️ GUARD ERROR - {ctx}()]: Argument 'year' '{year}' contains non-digit characters. Expected exactly 4 digits (e.g., '2026').")
+        raise ValueError(f"\n [ GUARD ERROR - {ctx}()]: Argument 'year' '{year}' contains non-digit characters. Expected exactly 4 digits (e.g., '2026').")
 
 
 
@@ -78,62 +78,62 @@ if __name__ == "__main__":
         # Test 1: Valid year string
         print("Test 1: Valid year string ('2026')")
         control_year("2026")
-        print("   ✅ OK: Valid year passed")
+        print("    OK: Valid year passed")
         tests_passed += 1
 
         # Test 2: None input
         print("\nTest 2: None input")
         try:
             control_year(None)
-            print("   ❌ FAILED: Should have raised ValueError")
+            print("    FAILED: Should have raised ValueError")
         except ValueError as e:
-            print(f"   ✅ OK: Caught expected error:\n      {e}")
+            print(f"    OK: Caught expected error:\n      {e}")
             tests_passed += 1
 
         # Test 3: Invalid type (int) - We are strict on 'str' only
         print("\nTest 3: Invalid type (int 2026)")
         try:
             control_year(2026)
-            print("   ❌ FAILED: Should have raised TypeError")
+            print("    FAILED: Should have raised TypeError")
         except TypeError as e:
-            print(f"   ✅ OK: Caught expected error:\n      {e}")
+            print(f"    OK: Caught expected error:\n      {e}")
             tests_passed += 1
 
         # Test 4: Year with spaces
         print("\nTest 4: Year with spaces (' 2026')")
         try:
             control_year(" 2026")
-            print("   ❌ FAILED: Should have raised ValueError")
+            print("    FAILED: Should have raised ValueError")
         except ValueError as e:
-            print(f"   ✅ OK: Caught expected error:\n      {e}")
+            print(f"    OK: Caught expected error:\n      {e}")
             tests_passed += 1
 
         # Test 5: Wrong length (3 digits)
         print("\nTest 5: Wrong length ('202')")
         try:
             control_year("202")
-            print("   ❌ FAILED: Should have raised ValueError")
+            print("    FAILED: Should have raised ValueError")
         except ValueError as e:
-            print(f"   ✅ OK: Caught expected error:\n      {e}")
+            print(f"    OK: Caught expected error:\n      {e}")
             tests_passed += 1
 
         # Test 6: Non-digit characters
         print("\nTest 6: Non-digit characters ('202A')")
         try:
             control_year("202A")
-            print("   ❌ FAILED: Should have raised ValueError")
+            print("    FAILED: Should have raised ValueError")
         except ValueError as e:
-            print(f"   ✅ OK: Caught expected error:\n      {e}")
+            print(f"    OK: Caught expected error:\n      {e}")
             tests_passed += 1
 
         # --- FINAL SUMMARY ---
         print("\n" + f" TESTS SUMMARY: {tests_passed}/{total_tests} PASSED ".center(80, "="))
         if tests_passed == total_tests:
-            print("   🎉 ALL YEAR GUARDS PASSED SUCCESSFULLY 🎉")
+            print("    ALL YEAR GUARDS PASSED SUCCESSFULLY ")
         else:
-            print("   ❌ Some tests failed - Review logical consistency")
+            print("    Some tests failed - Review logical consistency")
 
     except Exception as e:
-        print(f"\n❌ [UNEXPECTED SYSTEM FAILURE]: {e}")
+        print(f"\n [UNEXPECTED SYSTEM FAILURE]: {e}")
 
     print("=" * 80 + "\n")

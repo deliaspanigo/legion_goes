@@ -16,7 +16,7 @@ from pathlib import Path
 from datetime import datetime
 
 # =============================================================================
-# CEREBRO DE SELECCIÓN DE SATÉLITE
+# CEREBRO DE SELECCION DE SATELITE
 # =============================================================================
 
 def get_position_by_sat_id(sat_id: str) -> str:
@@ -29,11 +29,11 @@ def get_position_by_sat_id(sat_id: str) -> str:
         return "WEST"
     
     else:
-        raise ValueError(f"Satélite {s_id} no reconocido en la flota GOES-R.")
+        raise ValueError(f"Satelite {s_id} no reconocido en la flota GOES-R.")
 
 if __name__ == "__main__":
     # Test correcto (todos strings)
     position = get_position_by_sat_id(sat_id="19")
     print(f"Resultado del Test: {position}")
-    # Esto lanzaría un TypeError por culpa del 2026 (int):
+    # Esto lanzaria un TypeError por culpa del 2026 (int):
     # run_action02_download_files("19", "ABI-L2-LSTF", 2026, "003", "ALL")

@@ -59,7 +59,7 @@ def gen_dict_output_file_name(nc_path):
 # =============================================================================
 
 def apply_grayscale_transparency(input_path, output_path, saturation_threshold=20):
-    """Convierte píxeles en escala de grises a transparentes."""
+    """Converts grayscale pixels to transparent pixels."""
     img = Image.open(input_path).convert("RGBA")
     data = np.array(img)
     rgb = data[:, :, :3].astype(np.int16)
@@ -70,39 +70,39 @@ def apply_grayscale_transparency(input_path, output_path, saturation_threshold=2
     
 def apply_white_clouds_vibrant(input_path, output_path):
     """
-    Convierte a blanco vibrante con texturas.
-    Mapea los tonos oscuros a un rango más claro para evitar grises,
-    pero mantiene el degradado para el relieve.
+    Converts to vibrant white while preserving texture.
+    Maps dark tones to a lighter range to avoid gray output,
+    while keeping the gradient for relief.
     """
     img = Image.open(input_path).convert("RGBA")
     data = np.array(img).astype(np.float32)
     
-    # 1. Extraer luminancia (Brillo original)
-    # Usamos los pesos perceptuales para mayor fidelidad
+    # 1. Extract luminance (Original brightness)
+    # Use perceptual weights for higher fidelity
     luminance = (data[:, :, 0] * 0.299 + 
                  data[:, :, 1] * 0.587 + 
                  data[:, :, 2] * 0.114)
     
-    # 2. Máscara de visibilidad
+    # 2. Visibility mask
     visible_pixels = data[:, :, 3] > 0
     
-    # 3. REMAPEO DINÁMICO FIJO (Para evitar el gris)
-    # Queremos que incluso lo que antes era "gris" ahora sea un "blanco suave".
-    # Aplicamos un aumento de exposición y un desplazamiento (offset).
-    # Ajusta el offset (50-100) si quieres que las partes oscuras sean aún más blancas.
+    # 3. FIXED DYNAMIC REMAPPING (To avoid gray output)
+    # Even pixels that were previously gray should become soft white.
+    # Apply an exposure boost and offset (offset).
+    # Adjust the offset (50-100) if darker areas should be even whiter.
     offset = 60 
     scale = 1.2
     
     vibrant_white = (luminance * scale) + offset
     
-    # Capamos a 255 para que el blanco puro sea el límite
+    # Clip at 255 so pure white is the upper limit
     vibrant_white = np.clip(vibrant_white, 0, 255)
     
-    # 4. Asignar a los tres canales para que el color sea Blanco/Blanco-Hueso
+    # 4. Assign all three channels to produce white/off-white color
     for i in range(3):
         data[visible_pixels, i] = vibrant_white[visible_pixels]
     
-    # Guardar manteniendo el Alfa (transparencia) intacto
+    # Save while preserving alpha (transparency) intacto
     final_img = data.astype(np.uint8)
     Image.fromarray(final_img).save(output_path)
 
@@ -128,55 +128,55 @@ def run_proc_ABI_L2_MCMIPF_fnp02(nc_path, **kwargs):
         print(f"Target folder: {out_folder}")
 
         # --- NATIVE PROCESSING ---
-        print(f"      [Step 01/10] 🛰️  Loading IR Product...", end=" ", flush=True)
+        print("      [Step 01/10] Loading IR Product...", end=" ", flush=True)
         scn = Scene(filenames=[str(file_path)], reader='abi_l2_nc', reader_kwargs={'chunks': my_chunks})
         product_id = 'colorized_ir_clouds'
         scn.load([product_id])
         print("Done.")
 
-        print(f"      [Step 02/10] 🖼️  Saving Native IR...", end=" ", flush=True)
+        print("      [Step 02/10] Saving Native IR...", end=" ", flush=True)
         native_path = kwargs.get("png_native_ir")
         scn.save_datasets(writer='simple_image', datasets=[product_id], filename=str(native_path))
         print("Done.")
 
-        print(f"      [Step 03/10] 🎭  Applying Transparency (Native)...", end=" ", flush=True)
+        print("      [Step 03/10] Applying Transparency (Native)...", end=" ", flush=True)
         native_transp = kwargs.get("png_native_transparent")
         apply_grayscale_transparency(native_path, native_transp)
         print("Done.")
 
-        print(f"      [Step 04/10] ☁️  Generating White Clouds (Native)...", end=" ", flush=True)
-        # Aquí usamos la función que pediste basada en el Alfa del paso anterior
+        print("      [Step 04/10] Generating White Clouds (Native)...", end=" ", flush=True)
+        # Use the alpha-based function from the previous step
         apply_white_clouds_vibrant(native_transp, kwargs.get("png_native_white_clouds"))
         print("Done.")
 
         # --- REPROJECTION ---
-        print(f"      [Step 05/10] 🗺️  Defining WGS84 Area...", end=" ", flush=True)
+        print("      [Step 05/10] Defining WGS84 Area...", end=" ", flush=True)
         area_def = AreaDefinition('wgs84', 'Global', 'epsg4326', 'EPSG:4326', 3600, 1800, [-180, -90, 180, 90])
         print("Done.")
         
-        print(f"      [Step 06/10] 🔄  Resampling to WGS84...", end=" ", flush=True)
+        print("      [Step 06/10] Resampling to WGS84...", end=" ", flush=True)
         scn_res = scn.resample(area_def, resampler='kd_tree', **resample_kwargs)
         print("Done.")
 
         # --- WGS84 OUTPUTS ---
-        print(f"      [Step 07/10] 💾  Saving WGS84 Files (PNG/TIF)...", end=" ", flush=True)
+        print("      [Step 07/10] Saving WGS84 Files (PNG/TIF)...", end=" ", flush=True)
         wgs84_png = kwargs.get("png_wgs84_ir")
         scn_res.save_datasets(writer='simple_image', datasets=[product_id], filename=str(wgs84_png))
         scn_res.save_datasets(writer='geotiff', datasets=[product_id], filename=str(kwargs.get("tif_wgs84_ir")))
         print("Done.")
 
-        print(f"      [Step 08/10] 🎭  Applying Transparency (WGS84)...", end=" ", flush=True)
+        print("      [Step 08/10] Applying Transparency (WGS84)...", end=" ", flush=True)
         wgs84_transp = kwargs.get("png_wgs84_transparent")
         apply_grayscale_transparency(wgs84_png, wgs84_transp)
         print("Done.")
 
-        print(f"      [Step 09/10] ☁️  Generating White Clouds (WGS84)...", end=" ", flush=True)
+        print("      [Step 09/10] Generating White Clouds (WGS84)...", end=" ", flush=True)
         apply_white_clouds_vibrant(wgs84_transp, kwargs.get("png_wgs84_white_clouds"))
         print("Done.")
 
         # --- FINISH ---
         duration = round(time.time() - start_time, 2)
-        print(f"      [Step 10/10] 📸  Finalizing... Total time: {duration}s")
+        print(f"      [Step 10/10] Finalizing... Total time: {duration}s")
         
         del scn
         if 'scn_res' in locals(): del scn_res
@@ -184,7 +184,7 @@ def run_proc_ABI_L2_MCMIPF_fnp02(nc_path, **kwargs):
         return True
 
     except Exception as e:
-        print(f"\n      ❌ [FNP02 ERROR] {str(e)}")
+        print(f"\n      [FNP02 ERROR] {str(e)}")
         return False
 
 # =============================================================================
@@ -197,17 +197,17 @@ if __name__ == "__main__":
     nc_candidates = sorted(list(current_dir.glob("*MCMIPF*.nc")))
 
     if not nc_candidates:
-        print(f"❌ Error: No .nc files found in {current_dir}")
+        print(f" Error: No .nc files found in {current_dir}")
     else:
         target_nc = nc_candidates[0]
         test_out = current_dir / "test_outputs" / target_nc.stem
         test_out.mkdir(parents=True, exist_ok=True)
 
-        print(f"🎯 TARGET: {target_nc.name}")
+        print(f" TARGET: {target_nc.name}")
         output_paths = {k: str(test_out / v) for k, v in gen_dict_output_file_name(str(target_nc)).items()}
 
         if run_proc_ABI_L2_MCMIPF_fnp02(str(target_nc), **output_paths):
-            print("-" * 80 + f"\n✅ SUCCESS. Results in: {test_out}")
+            print("-" * 80 + f"\n SUCCESS. Results in: {test_out}")
         else:
-            print("-" * 80 + f"\n❌ FAILED.")
+            print("-" * 80 + f"\n FAILED.")
     print("=" * 80 + "\n")

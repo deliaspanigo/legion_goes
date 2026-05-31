@@ -43,7 +43,7 @@ def run_day_hour_ABI_L2_MCMIPF_fnp01(position: str, year: str, day: str, hour: s
     if hour.upper() == "ALL":
         # Generates list ['00', '01', ..., '23']
         hours_to_process = [str(h).zfill(2) for h in range(24)]
-        print(f"📅 PROCESSING FULL DAY ({year}-{day}) - 24 Hours")
+        print(f" PROCESSING FULL DAY ({year}-{day}) - 24 Hours")
     else:
         hours_to_process = [hour.zfill(2)]
 
@@ -58,18 +58,18 @@ def run_day_hour_ABI_L2_MCMIPF_fnp01(position: str, year: str, day: str, hour: s
         
         if not nc_candidates:
             # If processing ALL, some hours might be empty; log and continue
-            print(f"⚠️ No files found for hour {h}: {selected_folder_raw}")
+            print(f" No files found for hour {h}: {selected_folder_raw}")
             continue
 
-        print(f"\n--- 🕒 PROCESSING HOUR: {h} ({len(nc_candidates)} files) ---")
+        print(f"\n---  PROCESSING HOUR: {h} ({len(nc_candidates)} files) ---")
         
         # 5. Process each file in the current hour
         for nc_file in nc_candidates:
-            print(f"🚀 Executing: {nc_file.name}")
+            print(f" Executing: {nc_file.name}")
             try:
                 run_runner_ABI_L2_MCMIPF_fnp01(nc_path=str(nc_file), overwrite = overwrite)
             except Exception as e:
-                print(f"❌ Error processing {nc_file.name}: {e}")
+                print(f" Error processing {nc_file.name}: {e}")
                 continue # Continue with next file even if one fails
 
 # =============================================================================
@@ -89,9 +89,9 @@ if __name__ == "__main__":
             hour     = "ALL"
         )
         print("\n" + "="*80)
-        print("✅ GLOBAL PROCESS FINISHED")
+        print(" GLOBAL PROCESS FINISHED")
         print("="*80 + "\n")
         
     except Exception as e:
-        print(f"\n❌ CRITICAL ERROR: {str(e)}")
+        print(f"\n CRITICAL ERROR: {str(e)}")
         print("=" * 80)

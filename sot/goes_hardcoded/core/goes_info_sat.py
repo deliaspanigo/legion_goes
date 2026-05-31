@@ -78,12 +78,12 @@ if __name__ == "__main__":
     try:
         # Test 1: Check if SAVED_INFO_SAT_GOES is immutable proxy
         assert isinstance(SAVED_INFO_SAT_GOES, MappingProxyType), "SAVED_INFO_SAT_GOES must be MappingProxyType"
-        print("Test 1: SAVED_INFO_SAT_GOES is immutable proxy → ✅ OK")
+        print("Test 1: SAVED_INFO_SAT_GOES is immutable proxy   OK")
         tests_passed += 1
 
         # Test 2: Check number of satellites
         assert len(SAVED_INFO_SAT_GOES) == 4, f"Expected 4 satellites, got {len(SAVED_INFO_SAT_GOES)}"
-        print("Test 2: Catalog has 4 satellites → ✅ OK")
+        print("Test 2: Catalog has 4 satellites   OK")
         tests_passed += 1
 
         # Test 3: Check if AVAILABLE_GOES_ID and AVAILABLE_GOES_POSITIONS are tuples
@@ -91,34 +91,34 @@ if __name__ == "__main__":
         assert len(AVAILABLE_GOES_ID) == 4, f"Expected 4 IDs, got {len(AVAILABLE_GOES_ID)}"
         assert isinstance(AVAILABLE_GOES_POSITIONS, tuple), "AVAILABLE_GOES_POSITIONS must be tuple"
         assert len(AVAILABLE_GOES_POSITIONS) == 2, f"Expected 2 positions, got {len(AVAILABLE_GOES_POSITIONS)}"
-        print("Test 3: AVAILABLE_GOES_ID and AVAILABLE_GOES_POSITIONS are valid tuples → ✅ OK")
+        print("Test 3: AVAILABLE_GOES_ID and AVAILABLE_GOES_POSITIONS are valid tuples   OK")
         tests_passed += 1
 
         # Test 4: Runtime immutability check on root
         try:
             SAVED_INFO_SAT_GOES["16"] = "test"
-            print("Test 4: Root modification → ❌ FAILED (no error)")
+            print("Test 4: Root modification   FAILED (no error)")
         except TypeError:
-            print("Test 4: Root modification blocked → ✅ OK")
+            print("Test 4: Root modification blocked   OK")
             tests_passed += 1
 
         # Test 5: Runtime immutability check on nested dict
         try:
             SAVED_INFO_SAT_GOES["16"]["bucket"] = "test"
-            print("Test 5: Nested modification → ❌ FAILED (no error)")
+            print("Test 5: Nested modification   FAILED (no error)")
         except TypeError:
-            print("Test 5: Nested modification blocked → ✅ OK")
+            print("Test 5: Nested modification blocked   OK")
             tests_passed += 1
 
         print("\n" + f" TESTS SUMMARY: {tests_passed}/{total_tests} PASSED ".center(80, "="))
         if tests_passed == total_tests:
-            print("   🎉 ALL INTEGRITY TESTS PASSED SUCCESSFULLY 🎉")
+            print("    ALL INTEGRITY TESTS PASSED SUCCESSFULLY ")
         else:
-            print("   ❌ Some tests failed - review above")
+            print("    Some tests failed - review above")
 
     except AssertionError as ae:
-        print(f"\n❌ [ASSERTION FAILED]: {ae}")
+        print(f"\n [ASSERTION FAILED]: {ae}")
     except Exception as e:
-        print(f"\n❌ [UNEXPECTED TEST FAILURE]: {e}")
+        print(f"\n [UNEXPECTED TEST FAILURE]: {e}")
 
     print("=" * 80 + "\n")

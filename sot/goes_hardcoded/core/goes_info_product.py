@@ -59,8 +59,8 @@ _PRIVATE_PRODUCTS = {
         "description": "Land Surface Temperature product (Full Disk)",
         "level": "L2",
         "init_file_name": "OR_ABI-L2-LSTF-M6_G",
-        "units": "Kelvin (original) → Celsius (post-processed)",
-        "typical_range": "-100 °C to +100 °C",
+        "units": "Kelvin (original)  Celsius (post-processed)",
+        "typical_range": "-100 C to +100 C",
         "main_use": "Drought monitoring, vegetation thermal stress",
         "notes": "Values outside disk = fill (NaN).",
         "total_files_one_day": 24,
@@ -206,39 +206,39 @@ if __name__ == "__main__":
     try:
         # Test 1: Check if SAVED_INFO_PROD_GOES is immutable proxy
         assert isinstance(SAVED_INFO_PROD_GOES, MappingProxyType), "SAVED_INFO_PROD_GOES must be MappingProxyType"
-        print("Test 1: SAVED_INFO_PROD_GOES is immutable proxy → ✅ OK")
+        print("Test 1: SAVED_INFO_PROD_GOES is immutable proxy   OK")
 
         # Test 2: Check number of products
         assert len(SAVED_INFO_PROD_GOES) == 4, f"Expected 4 products, got {len(SAVED_INFO_PROD_GOES)}"
-        print("Test 2: Catalog has 4 products → ✅ OK")
+        print("Test 2: Catalog has 4 products   OK")
 
         # Test 3: Check if AVAILABLE_GOES_PRODUCTS is a tuple
         assert isinstance(AVAILABLE_GOES_PRODUCTS, tuple), "AVAILABLE_GOES_PRODUCTS must be tuple"
         assert len(AVAILABLE_GOES_PRODUCTS) == 4, f"Expected 4 products in tuple, got {len(AVAILABLE_GOES_PRODUCTS)}"
-        print("Test 3: AVAILABLE_GOES_PRODUCTS is valid tuple → ✅ OK")
+        print("Test 3: AVAILABLE_GOES_PRODUCTS is valid tuple   OK")
 
         # Test 4: Runtime immutability check on root
         try:
             SAVED_INFO_PROD_GOES["ABI-L2-LSTF"] = "test"
-            print("Test 4: Root modification → ❌ FAILED (no error)")
+            print("Test 4: Root modification   FAILED (no error)")
         except TypeError:
-            print("Test 4: Root modification blocked → ✅ OK")
+            print("Test 4: Root modification blocked   OK")
         tests_passed += 1
 
         # Test 5: Runtime immutability check on nested dict
         try:
             SAVED_INFO_PROD_GOES["ABI-L2-LSTF"]["type"] = "test"
-            print("Test 5: Nested modification → ❌ FAILED (no error)")
+            print("Test 5: Nested modification   FAILED (no error)")
         except TypeError:
-            print("Test 5: Nested modification blocked → ✅ OK")
+            print("Test 5: Nested modification blocked   OK")
         tests_passed += 1
 
         print("\n" + " ALL INTEGRITY TESTS PASSED ".center(80, "="))
-        print("   🎉 SoT is fully immutable and valid 🎉")
+        print("    SoT is fully immutable and valid ")
 
     except AssertionError as ae:
-        print(f"\n❌ [ASSERTION FAILED]: {ae}")
+        print(f"\n [ASSERTION FAILED]: {ae}")
     except Exception as e:
-        print(f"\n❌ [UNEXPECTED TEST FAILURE]: {e}")
+        print(f"\n [UNEXPECTED TEST FAILURE]: {e}")
 
     print("=" * 80 + "\n")

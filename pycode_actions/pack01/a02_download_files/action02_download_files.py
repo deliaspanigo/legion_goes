@@ -22,7 +22,7 @@ from pathlib import Path
 from datetime import datetime
 
 # =============================================================================
-# CEREBRO DE SELECCIÓN DE SATÉLITE
+# CEREBRO DE SELECCION DE SATELITE
 # =============================================================================
 
 
@@ -32,14 +32,14 @@ from datetime import datetime
 
 def run_action02_download_files(position: str, product: str, year: str, day: str, hour: str):
     """
-    Descarga archivos de GOES. 
+    Downloads GOES files. 
     REQUISITO: Todos los argumentos deben ser strings.
     """
-    # 1. Validación de tipos (Asegura que todos sean strings)
+    # 1. Validacion de tipos (Asegura que todos sean strings)
     args = {"position": position, "product": product, "year": year, "day": day, "hour": hour}
     for name, value in args.items():
         if not isinstance(value, str):
-            raise TypeError(f"El argumento '{name}' debe ser string, se recibió {type(value).__name__}")
+            raise TypeError(f"El argumento '{name}' debe ser string, se recibio {type(value).__name__}")
 
     # Sat
     selected_sat = get_sat_id_by_date(position = position, year = year, day = day)
@@ -51,5 +51,5 @@ if __name__ == "__main__":
     # Test correcto (todos strings)
     run_action02_download_files(position="WEST", product="ABI-L2-LSTF", year="2026", day="003", hour="12")
     
-    # Esto lanzaría un TypeError por culpa del 2026 (int):
+    # Esto lanzaria un TypeError por culpa del 2026 (int):
     # run_action02_download_files("WEST", "ABI-L2-LSTF", 2026, "003", "ALL")

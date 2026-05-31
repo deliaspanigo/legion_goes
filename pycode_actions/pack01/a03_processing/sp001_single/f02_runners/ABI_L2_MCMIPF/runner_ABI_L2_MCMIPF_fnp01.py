@@ -109,18 +109,51 @@ def gen_str_folder_output(nc_path):
     
     return str_output_folder
 
-def gen_dict_path_output(nc_path):
-    working_dir = Path.cwd() 
-    str_folder = gen_str_folder_output(nc_path)
-    
-    str_output_folder_path = working_dir / str_folder
-    str_output_folder_path.mkdir(parents=True, exist_ok=True)
-    
-    # Map filenames to Path objects (instead of strings) for validation
-    dict_output_file_name = gen_dict_output_file_name(nc_path=str(nc_path))
-    dict_output_file_path = {k: (str_output_folder_path / v) for k, v in dict_output_file_name.items()}
-    
+def gen_dict_path_output(nc_path, str_folder_path_data_proc=None):
+    """
+    Creates the output directory and maps schema filenames to full Path objects.
+
+    Parameters
+    ----------
+    nc_path : str or Path
+        Input NetCDF file.
+
+    str_folder_path_data_proc : str or Path
+        Root data_proc folder. Required.
+
+    Returns
+    -------
+    dict
+        Dictionary where keys are logical output names and values are full Path objects.
+    """
+
+    if str_folder_path_data_proc is None:
+        raise ValueError("str_folder_path_data_proc is required")
+
+    nc_path = Path(nc_path)
+
+    data_proc_dir = Path(str_folder_path_data_proc).expanduser().resolve()
+
+    if data_proc_dir.exists() and not data_proc_dir.is_dir():
+        raise ValueError(f"str_folder_path_data_proc exists but is not a folder: {data_proc_dir}")
+
+    data_proc_dir.mkdir(parents=True, exist_ok=True)
+
+    relative_output_folder = gen_str_folder_output(nc_path)
+    output_folder_path = data_proc_dir / relative_output_folder
+    output_folder_path.mkdir(parents=True, exist_ok=True)
+
+    dict_output_file_name = gen_dict_output_file_name(
+        nc_path=str(nc_path)
+    )
+
+    dict_output_file_path = {
+        key: output_folder_path / file_name
+        for key, file_name in dict_output_file_name.items()
+    }
+
     return dict_output_file_path
+
 
 def is_processing_complete(output_dict: dict) -> bool:
     for p in output_dict.values():
@@ -132,15 +165,18 @@ def is_processing_complete(output_dict: dict) -> bool:
 # RUNNER CORE
 # =============================================================================
 
-def run_runner_ABI_L2_MCMIPF_fnp01(nc_path, overwrite=False):
+def run_runner_ABI_L2_MCMIPF_fnp01(nc_path, str_folder_path_data_proc=None, overwrite=False):
     """
-    Main runner logic for MCMIPF: manages skip-logic with detailed diagnostics,
+    Main runner logic for MCMIPF: manages skip-logic with detailed daygnostics,
     surgical silencing, and core execution.
     """
     nc_path = Path(nc_path)
     
     # 1. Get expected output paths as Path objects
-    dict_path_output = gen_dict_path_output(nc_path=nc_path)
+    dict_path_output = gen_dict_path_output(
+        nc_path=nc_path,
+        str_folder_path_data_proc=str_folder_path_data_proc
+    )
     
     # 2. Diagnostic: Check current status
     exists_count = sum(1 for p in dict_path_output.values() if p.exists())
@@ -150,7 +186,7 @@ def run_runner_ABI_L2_MCMIPF_fnp01(nc_path, overwrite=False):
     # 3. Decision Logic & Specialized Printing
     if all_exist and not overwrite:
         print(f"  [SKIPPED]     {nc_path.name} (All {total_expected} outputs exist)")
-        return
+        return True
 
     # Determine the reason for processing
     if overwrite and all_exist:
@@ -173,9 +209,21 @@ def run_runner_ABI_L2_MCMIPF_fnp01(nc_path, overwrite=False):
     
     try:
         with silence_runner_noise():
-            run_proc_ABI_L2_MCMIPF_fnp01(nc_path=str(nc_path), **dict_str_paths)
+            success = run_proc_ABI_L2_MCMIPF_fnp01(nc_path=str(nc_path), **dict_str_paths)
     except Exception as e:
-        print(f"  ❌ Error processing {nc_path.name}: {e}")
+        print(f"  [ERROR] Error processing {nc_path.name}: {e}")
+        return False
+
+    if not success:
+        print(f"  [FAILED]      {nc_path.name}")
+        print("                Core function returned False.")
+        return False
+
+    if not is_processing_complete(dict_path_output):
+        print(f"  [INCOMPLETE]  {nc_path.name}")
+        return False
+    print(f"  [COMPLETED]   {nc_path.name}")
+    return True
 
 # =============================================================================
 # MAIN SIMPLE
@@ -187,8 +235,8 @@ if __name__ == "__main__":
     nc_candidates = sorted(list(working_dir.glob("*MCMIPF*.nc")))
 
     if not nc_candidates:
-        print(f"❌ Error: No .nc files with 'MCMIPF' found in: {working_dir}")
+        print(f"[ERROR] No .nc files with 'MCMIPF' found in: {working_dir}")
     else:
         target_nc = nc_candidates[0]
         run_runner_ABI_L2_MCMIPF_fnp01(nc_path=target_nc, overwrite = True)
-        print("-" * 80 + "\n✅ TEST FINISHED\n" + "=" * 80)
+        print("-" * 80 + "\nx TEST FINISHED\n" + "=" * 80)
