@@ -10,7 +10,21 @@ import os
 # 1. Absolute paths based on the file location (satpy_config/)
 BASE_DIR = Path(__file__).resolve().parent
 PROJ_DIR = BASE_DIR.parent  # Sube a legion_goes/
-CACHE_DIR = PROJ_DIR / "satpy_cache"
+
+_cache_from_env = (
+    os.environ.get("LEGIONGOES_SATPY_CACHE_DIR")
+    or os.environ.get("LEGION_CACHE_DIR")
+)
+
+if _cache_from_env:
+    CACHE_DIR = Path(_cache_from_env).expanduser().resolve()
+else:
+    CACHE_DIR = (
+        Path(os.environ.get("LOCALAPPDATA", str(Path.home())))
+        / "LegionGOES_LAB"
+        / "cache"
+        / "satpy"
+    ).resolve()
 
 # Crea el cache si no existe
 CACHE_DIR.mkdir(parents=True, exist_ok=True)

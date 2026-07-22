@@ -51,7 +51,10 @@ def gen_dict_output_file_name(nc_path):
         "png_wgs84_ir":             f"{str_name}_CRS-WGS84_MCMIPF-fnp02-IR-Colorized.png",
         "png_wgs84_transparent":    f"{str_name}_CRS-WGS84_MCMIPF-fnp02-IR-Colorized-Transparent.png",
         "png_wgs84_white_clouds":   f"{str_name}_CRS-WGS84_MCMIPF-fnp02-IR-selected_clouds.png",
-        "tif_wgs84_ir":             f"{str_name}_CRS-WGS84_MCMIPF-fnp02-IR-Colorized.tif"
+        "tif_wgs84_ir":             f"{str_name}_CRS-WGS84_MCMIPF-fnp02-IR-Colorized.tif",
+        "png_mercator_ir":          f"{str_name}_CRS-Mercator_MCMIPF-fnp02-IR-Colorized.png",
+        "png_mercator_transparent": f"{str_name}_CRS-Mercator_MCMIPF-fnp02-IR-Colorized-Transparent.png",
+        "png_mercator_white_clouds": f"{str_name}_CRS-Mercator_MCMIPF-fnp02-IR-selected_clouds.png"
     }
 
 # =============================================================================
@@ -150,36 +153,59 @@ def run_proc_ABI_L2_MCMIPF_fnp02(nc_path, **kwargs):
         print("Done.")
 
         # --- REPROJECTION ---
-        print("      [Step 05/10] Defining WGS84 Area...", end=" ", flush=True)
+        print("      [Step 05/12] Defining WGS84 and Web Mercator areas...", end=" ", flush=True)
         area_def = AreaDefinition('wgs84', 'Global', 'epsg4326', 'EPSG:4326', 3600, 1800, [-180, -90, 180, 90])
+        web_mercator_max = 20037508.342789244
+        area_mercator = AreaDefinition(
+            'webmercator',
+            'Global Web Mercator',
+            'epsg3857',
+            'EPSG:3857',
+            3600,
+            3400,
+            [-web_mercator_max, -web_mercator_max, web_mercator_max, web_mercator_max]
+        )
         print("Done.")
         
-        print("      [Step 06/10] Resampling to WGS84...", end=" ", flush=True)
+        print("      [Step 06/12] Resampling to WGS84...", end=" ", flush=True)
         scn_res = scn.resample(area_def, resampler='kd_tree', **resample_kwargs)
         print("Done.")
 
         # --- WGS84 OUTPUTS ---
-        print("      [Step 07/10] Saving WGS84 Files (PNG/TIF)...", end=" ", flush=True)
+        print("      [Step 07/12] Saving WGS84 Files (PNG/TIF)...", end=" ", flush=True)
         wgs84_png = kwargs.get("png_wgs84_ir")
         scn_res.save_datasets(writer='simple_image', datasets=[product_id], filename=str(wgs84_png))
         scn_res.save_datasets(writer='geotiff', datasets=[product_id], filename=str(kwargs.get("tif_wgs84_ir")))
         print("Done.")
 
-        print("      [Step 08/10] Applying Transparency (WGS84)...", end=" ", flush=True)
+        print("      [Step 08/12] Applying Transparency (WGS84)...", end=" ", flush=True)
         wgs84_transp = kwargs.get("png_wgs84_transparent")
         apply_grayscale_transparency(wgs84_png, wgs84_transp)
         print("Done.")
 
-        print("      [Step 09/10] Generating White Clouds (WGS84)...", end=" ", flush=True)
+        print("      [Step 09/12] Generating White Clouds (WGS84)...", end=" ", flush=True)
         apply_white_clouds_vibrant(wgs84_transp, kwargs.get("png_wgs84_white_clouds"))
+        print("Done.")
+
+        print("      [Step 10/12] Resampling to Web Mercator...", end=" ", flush=True)
+        scn_mercator = scn.resample(area_mercator, resampler='kd_tree', **resample_kwargs)
+        print("Done.")
+
+        print("      [Step 11/12] Saving Mercator IR files...", end=" ", flush=True)
+        mercator_png = kwargs.get("png_mercator_ir")
+        scn_mercator.save_datasets(writer='simple_image', datasets=[product_id], filename=str(mercator_png))
+        mercator_transp = kwargs.get("png_mercator_transparent")
+        apply_grayscale_transparency(mercator_png, mercator_transp)
+        apply_white_clouds_vibrant(mercator_transp, kwargs.get("png_mercator_white_clouds"))
         print("Done.")
 
         # --- FINISH ---
         duration = round(time.time() - start_time, 2)
-        print(f"      [Step 10/10] Finalizing... Total time: {duration}s")
+        print(f"      [Step 12/12] Finalizing... Total time: {duration}s")
         
         del scn
         if 'scn_res' in locals(): del scn_res
+        if 'scn_mercator' in locals(): del scn_mercator
         gc.collect()
         return True
 

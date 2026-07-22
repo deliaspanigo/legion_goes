@@ -122,7 +122,7 @@ enhancements:
                 - [240, 116,  70, 255]   # 35: TF Low probability fire
                 - [247, 134,  58, 255]   # 40: Water (Magma Orange)
                 - [251, 153,  49, 255]   # 50: Atmospheric Limb
-                - [252, 173,  47, 255]   # 60: Desert (Magma Gold)
+                - [0, 255, 200, 255]     # 60: Solar Glint / Block-out (Electric Cyan)
                 - [251, 193,  56, 255]   # 100: Processed Land
                 - [247, 213,  75, 255]   # 120: Bad L1b
                 - [241, 233, 103, 255]   # 121: Extr. Cloud
@@ -172,7 +172,7 @@ enhancements:
                 - [240, 116,  70, 255]   # 35: TF Low probability fire ***
                 - [247, 134,  58,   0]   # 40: Water (Magma Orange)
                 - [251, 153,  49,   0]   # 50: Atmospheric Limb ***
-                - [252, 173,  47, 255]   # 60: Glint (reflejo sol)
+                - [0, 255, 200, 255]     # 60: Solar Glint / Block-out (Electric Cyan)
                 - [251, 193,  56,   0]   # 100: Processed Land
                 - [247, 213,  75,   0]   # 120: Bad L1b
                 - [241, 233, 103,   0]   # 121: Extr. Cloud
@@ -222,7 +222,7 @@ enhancements:
                 - [240, 116,  70,   0]   # 35: TF Low probability fire ***
                 - [247, 134,  58,   0]   # 40: Water (Magma Orange)
                 - [251, 153,  49,   0]   # 50: Atmospheric Limb ***
-                - [252, 173,  47, 255]   # 60: Glint (reflejo sol)
+                - [0, 255, 200, 255]     # 60: Solar Glint / Block-out (Electric Cyan)
                 - [251, 193,  56,   0]   # 100: Processed Land
                 - [247, 213,  75,   0]   # 120: Bad L1b
                 - [241, 233, 103,   0]   # 121: Extr. Cloud
@@ -272,7 +272,7 @@ enhancements:
                 - [240, 116,  70, 255]   # 35: TF Low probability fire ***
                 - [247, 134,  58,   0]   # 40: Water (Magma Orange)
                 - [251, 153,  49,   0]   # 50: Atmospheric Limb ***
-                - [252, 173,  47,   0]   # 60: Glint (reflejo sol)
+                - [0, 255, 200, 255]     # 60: Solar Glint / Block-out (Electric Cyan)
                 - [251, 193,  56,   0]   # 100: Processed Land
                 - [247, 213,  75,   0]   # 120: Bad L1b
                 - [241, 233, 103,   0]   # 121: Extr. Cloud

@@ -1,0 +1,4 @@
+"""
+Surface temperature activity processing.
+"""
+

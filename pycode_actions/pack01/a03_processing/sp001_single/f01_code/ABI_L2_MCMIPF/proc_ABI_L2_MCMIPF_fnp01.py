@@ -4,12 +4,14 @@ Version: 0.0.4
 Description:
     Core processing - ABI-L2-MCMIPF FNP01.
 
-    This FNP generates 5 mandatory files:
+    This FNP generates 7 mandatory files:
     - GOES native true color PNG
     - GOES native day-only PNG
     - WGS84 true color PNG
     - WGS84 day-only PNG
     - WGS84 true color GeoTIFF
+    - Mercator true color PNG
+    - Mercator day-only PNG
 
     If any mandatory file cannot be generated, the function returns False.
 
@@ -89,6 +91,12 @@ def gen_dict_output_file_name(nc_path):
         "wgs84_true_color_tif": (
             f"{str_name}_CRS-WGS84_MCMIPF-fnp01-TrueColor.tif"
         ),
+        "mercator_true_color_png": (
+            f"{str_name}_CRS-Mercator_MCMIPF-fnp01-TrueColor.png"
+        ),
+        "mercator_true_color_day_only_png": (
+            f"{str_name}_CRS-Mercator_MCMIPF-fnp01-TrueColor-DayOnly.png"
+        ),
     }
 
     return dict_output_schema
@@ -105,6 +113,8 @@ def get_required_output_keys():
         "wgs84_true_color_png",
         "wgs84_true_color_day_only_png",
         "wgs84_true_color_tif",
+        "mercator_true_color_png",
+        "mercator_true_color_day_only_png",
     ]
 
 
@@ -209,6 +219,8 @@ def run_proc_ABI_L2_MCMIPF_fnp01(nc_path, **kwargs):
     scn_day = None
     scn_res = None
     scn_res_day = None
+    scn_mercator = None
+    scn_mercator_day = None
 
     try:
         # ---------------------------------------------------------------------
@@ -241,6 +253,23 @@ def run_proc_ABI_L2_MCMIPF_fnp01(nc_path, **kwargs):
             3600,
             1800,
             [-180, -90, 180, 90],
+        )
+
+        web_mercator_max = 20037508.342789244
+
+        area_mercator = AreaDefinition(
+            "webmercator",
+            "Global Web Mercator",
+            "epsg3857",
+            "EPSG:3857",
+            3600,
+            3400,
+            [
+                -web_mercator_max,
+                -web_mercator_max,
+                web_mercator_max,
+                web_mercator_max,
+            ],
         )
 
         # ---------------------------------------------------------------------
@@ -394,9 +423,57 @@ def run_proc_ABI_L2_MCMIPF_fnp01(nc_path, **kwargs):
 
         print("[OK]", flush=True)
 
+        # ---------------------------------------------------------------------
+        # Step 09
+        # ---------------------------------------------------------------------
+
+        print(
+            "[Step 09/10] Resampling GOES projection to Web Mercator...",
+            end=" ",
+            flush=True,
+        )
+
+        scn_mercator = scn.resample(
+            area_mercator,
+            resampler="kd_tree",
+            **resample_kwargs,
+        )
+
+        scn_mercator_day = scn_day.resample(
+            area_mercator,
+            resampler="kd_tree",
+            **resample_kwargs,
+        )
+
+        print("[OK]", flush=True)
+
+        # ---------------------------------------------------------------------
+        # Step 10
+        # ---------------------------------------------------------------------
+
+        print(
+            "[Step 10/10] Saving Mercator true color PNGs...",
+            end=" ",
+            flush=True,
+        )
+
+        scn_mercator.save_dataset(
+            prod_raw,
+            filename=kwargs["mercator_true_color_png"],
+            writer="simple_image",
+        )
+
+        scn_mercator_day.save_dataset(
+            prod_raw,
+            filename=kwargs["mercator_true_color_day_only_png"],
+            writer="simple_image",
+        )
+
+        print("[OK]", flush=True)
+
         # Validate outputs
         print(
-            "[Step 09/08] Validating mandatory outputs...",
+            "[Step 11/10] Validating mandatory outputs...",
             end=" ",
             flush=True,
         )
@@ -433,6 +510,12 @@ def run_proc_ABI_L2_MCMIPF_fnp01(nc_path, **kwargs):
 
             if scn_res_day is not None:
                 del scn_res_day
+
+            if scn_mercator is not None:
+                del scn_mercator
+
+            if scn_mercator_day is not None:
+                del scn_mercator_day
 
             gc.collect()
 

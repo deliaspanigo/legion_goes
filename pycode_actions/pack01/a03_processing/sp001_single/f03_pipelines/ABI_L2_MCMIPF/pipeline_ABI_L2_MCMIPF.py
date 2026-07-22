@@ -72,6 +72,11 @@ from legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f02_runners.A
     run_runner_ABI_L2_MCMIPF_fnp02,
 )
 
+from legion_goes.pycode_actions.pack01.a03_processing.sp001_single.f02_runners.ABI_L2_MCMIPF.runner_ABI_L2_MCMIPF_fnp03 import (
+    gen_dict_path_output as gen_dict_path_output_fnp03,
+    run_runner_ABI_L2_MCMIPF_fnp03,
+)
+
 
 # =============================================================================
 # Small helpers
@@ -371,10 +376,84 @@ def run_fnp02_for_pipeline(nc_path, data_proc_dir, overwrite=False) -> Dict[str,
         "error": error,
     }
 
+
+def run_fnp03_for_pipeline(nc_path, data_proc_dir, overwrite=False) -> Dict[str, Any]:
+    """
+    Wrapper around runner FNP03.
+
+    This keeps the pipeline manifest independent from the runner internal prints.
+    """
+
+    start = now_seconds()
+
+    dict_path_output = gen_dict_path_output_fnp03(
+        nc_path=nc_path,
+        str_folder_path_data_proc=data_proc_dir,
+    )
+
+    outputs_before = output_status_from_dict(dict_path_output)
+    missing_before = missing_output_keys(outputs_before)
+
+    success = False
+    error = None
+
+    try:
+        success = run_runner_ABI_L2_MCMIPF_fnp03(
+            nc_path=nc_path,
+            str_folder_path_data_proc=data_proc_dir,
+            overwrite=overwrite,
+        )
+
+    except Exception:
+        success = False
+        error = traceback.format_exc()
+
+    outputs_after = output_status_from_dict(dict_path_output)
+    missing_after = missing_output_keys(outputs_after)
+
+    if success and len(missing_after) == 0:
+        if len(missing_before) == 0 and not overwrite:
+            status = "skipped_existing"
+        else:
+            status = "processed_complete"
+
+    elif success and len(missing_after) > 0:
+        status = "processed_incomplete"
+
+        if error is None:
+            error = (
+                "Runner returned True, but mandatory outputs are missing or empty. "
+                f"Missing outputs after processing: {missing_after}"
+            )
+
+    else:
+        status = "error"
+
+        if error is None:
+            error = (
+                "Runner returned False. "
+                "Check fnp03.log for the real processing error. "
+                f"Missing outputs after processing: {missing_after}"
+            )
+
+    return {
+        "fnp_id": "fnp03",
+        "success": bool(success and len(missing_after) == 0),
+        "status": status,
+        "overwrite": bool(overwrite),
+        "duration_seconds": round(now_seconds() - start, 3),
+        "missing_before": missing_before,
+        "missing_after": missing_after,
+        "outputs_before": outputs_before,
+        "outputs_after": outputs_after,
+        "error": error,
+    }
+
 # Registry preparado para futuras FNPs.
 FNP_REGISTRY = {
     "fnp01": run_fnp01_for_pipeline,
     "fnp02": run_fnp02_for_pipeline,
+    "fnp03": run_fnp03_for_pipeline,
 }
 
 
